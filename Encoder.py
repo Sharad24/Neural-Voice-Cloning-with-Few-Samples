@@ -16,12 +16,12 @@ class Attention(nn.Module):
         # for encoder, we use self-attention, which means we
         # have query_dim and key_dim with same size
         dim = dim
-        for i in range(num_units):
+        for i in num_units:
             layer = ExtendedSequential(
                 MultiHeadAttention(dim, dim, i),
                 PositionWiseFFN(i))
             layers.append(layer)
-            i = unit
+            dim = i
 
         return nn.ModuleList(layers)
 
