@@ -5,53 +5,6 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.nn.parameter as parameter
 
-class PreEncoderLayer(nn.Module):
-    def __init__(self):
-        super(PreEncoderLayer,self).__init__()
-        self.layer = nn.Linear(128, 128)
-        
-    def forward(self,x):
-        x = F.elu(self.layer(x))
-        return x
-
-
-class PositionWiseFFN(nn.Module):
-    def __init__(self, feature_size, num_units=[2048, 512]):
-        super(PositionWiseFFN, self).__init__()
-        self.ffn = self._build_ffn(feature_size, num_units)
-
-    def _build_ffn(self, feature_size, num_units):
-        layers = []
-        features = feature_size
-        for unit in num_units:
-            layers.append(nn.Linear(features, unit))
-            features = unit
-
-        return nn.Sequential(*layers)
-
-    def forward(self, X):
-        # assert if the feature size of inputs not the same as
-        # the last ffn layer, since we need both of them
-        # the same for residual network
-        assert X.size(-1) == self.ffn[-1].bias.size(-1)
-        ffn = self.ffn(X)
-        # residual network
-        ffn += X
-
-        return ffn
-
-class ExtendedSequential(nn.Sequential):
-    def __init__(self, *args):
-        super(ExtendedSequential, self).__init__(*args)
-
-    def forward(self, *inputs):
-        for module in self._modules.values():
-            if isinstance(inputs, list) or isinstance(inputs, tuple):
-                inputs = module(*inputs)
-            else:
-                inputs = module(inputs)
-        return inputs
-
 class MultiHeadAttention(nn.Module):
     def __init__(self, query_dim, key_dim, num_units, dropout_p=0.5, h=2, is_masked=False):
         super(MultiHeadAttention, self).__init__()
@@ -75,9 +28,9 @@ class MultiHeadAttention(nn.Module):
         self.bn = nn.BatchNorm1d(num_units)
 
     def forward(self, query, keys):
-        Q = self.query_layer(query)
-        K = self.key_layer(keys)
-        V = self.value_layer(keys)
+        Q = F.elu(self.query_layer(query))
+        K = F.elu(self.key_layer(keys))
+        V = F.elu(self.value_layer(keys))
 
         # split each Q, K and V into h different values from dim 2
         # and then merge them back together in dim 0
@@ -105,7 +58,7 @@ class MultiHeadAttention(nn.Module):
             # this is some trick that I use to combine the lower diagonal
             # matrix and its masking. (diag_mat-1).abs() will reverse the value
             # inside diag_mat, from 0 to 1 and 1 to zero. with this
-            # we don't need loop operation andn could perform our calculation
+            # we don't need loop operation and could perform our calculation
             # faster
             attention = (attention * diag_mat) + (mask * (diag_mat-1).abs())
         # put it to softmax

@@ -1,31 +1,27 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import sys
+
+sys.path.insert(0, '/home/sharad/Desktop/SAiDL/Neural Voice Cloning with Few Samples/Neural Voice Cloning With Few Samples/Modules/')
 
 import Cloning_Samples_Attention
 from Cloning_Samples_Attention import *
 
 class Attention(nn.Module):
-    def __init__(self, dim, num_units):
+    def __init__(self, dim):
         super(Attention, self).__init__()
 
-        self.encoders = self._build_model(dim, num_units)
+        self.encoders = self._build_model(dim)
         
-    def _build_model(self, dim, num_units):
+    def _build_model(self, dim):
         layers = []
-        # for encoder, we use self-attention, which means we
-        # have query_dim and key_dim with same size
         dim = dim
-        for i in range(num_units):
-            layer = ExtendedSequential(
-                MultiHeadAttention(dim, dim, dim),
-                PositionWiseFFN(i))
-            layers.append(layer)
-            i = unit
+        layers.append(MultiHeadAttention(dim, dim, dim))
 
         return nn.ModuleList(layers)
 
-    def forward(self, inputs, conv_unit_output):
+    def forward(self, inputs):
         net_inputs = inputs
         for enc in self.encoders:
             net_inputs = enc(net_inputs, net_inputs)
