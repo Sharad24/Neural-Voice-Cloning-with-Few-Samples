@@ -8,20 +8,22 @@ import torch.nn.parameter as parameter
 class MultiHeadAttention(nn.Module):
     def __init__(self, query_dim, key_dim, num_units, dropout_p=0.5, h=2, is_masked=False):
         super(MultiHeadAttention, self).__init__()
+        
         if query_dim != key_dim:
             raise ValueError("query_dim and key_dim must be the same")
         if num_units % h != 0:
             raise ValueError("num_units must be dividable by h")
         if query_dim != num_units:
-            raise ValueError("to employ residual connection, the number of "
-                             "query_dim and num_units must be the same")
+            raise ValueError("to employ residual connection, the number of query_dim and num_units must be the same")
+                             
 
+            
         self._num_units = num_units
         self._h = h
         self._key_dim = Variable(torch.FloatTensor([key_dim]))
         self._dropout_p = dropout_p
         self._is_masked = is_masked
-
+     
         self.query_layer = nn.Linear(query_dim, num_units, bias=False)
         self.key_layer = nn.Linear(key_dim, num_units, bias=False)
         self.value_layer = nn.Linear(key_dim, num_units, bias=False)
