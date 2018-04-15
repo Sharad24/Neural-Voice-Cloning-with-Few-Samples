@@ -1,8 +1,8 @@
 # Neural-Voice-Cloning-with-Few-Samples
 Implementation of the Neural Voice Cloning with Few Samples Paper by Baidu
 
-Updates~
+Incomplete~
 
-1)Speech Embedding classes built
+1)Speaker Verification Model
 
-2)Speech Embedding tested, train.py left
+2)Multi-generative model for testing
