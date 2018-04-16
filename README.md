@@ -7,5 +7,5 @@ Incomplete~
 
 # Acknowledgements
 
-The implementation of deep voice 3 was done from the following repo:
+The implementation of deep voice 3 was done from the following repository:
 https://github.com/r9y9/deepvoice3_pytorch
