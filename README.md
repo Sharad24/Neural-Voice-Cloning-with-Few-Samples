@@ -5,4 +5,7 @@ Incomplete~
 
 1)Speaker Verification Model
 
-2)Multi-generative model for testing
+# Acknowledgements
+
+The implementation of deep voice 3 was done from the following repo:
+https://github.com/r9y9/deepvoice3_pytorch
