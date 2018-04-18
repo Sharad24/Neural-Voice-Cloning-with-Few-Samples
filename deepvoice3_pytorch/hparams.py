@@ -1,4 +1,5 @@
 import tensorflow as tf
+
 # NOTE: If you want full control for model architecture. please take a look
 # at the code and change whatever you want. Some hyper parameters are hardcoded.
 
@@ -30,25 +31,91 @@ hparams = tf.contrib.training.HParams(
     n_speakers=1,
     speaker_embed_dim=16,
 
+    # Presets known to work good.
+    # NOTE: If specified, override hyper parameters with preset
+    preset="",
+    presets={
+        "deepvoice3_ljspeech": {
+            "n_speakers": 1,
+            "downsample_step": 4,
+            "outputs_per_step": 1,
+            "embedding_weight_std": 0.1,
+            "dropout": 1 - 0.95,
+            "kernel_size": 3,
+            "text_embed_dim": 256,
+            "encoder_channels": 512,
+            "decoder_channels": 256,
+            "converter_channels": 256,
+            "use_guided_attention": True,
+            "guided_attention_sigma": 0.2,
+            "binary_divergence_weight": 0.1,
+            "use_decoder_state_for_postnet_input": True,
+            "max_positions": 512,
+            "query_position_rate": 1.0,
+            "key_position_rate": 1.385,
+            "key_projection": True,
+            "value_projection": True,
+            "clip_thresh": 0.1,
+            "initial_learning_rate": 5e-4,
+        },
+        "deepvoice3_vctk": {
+            "n_speakers": 108,
+            "speaker_embed_dim": 16,
+            "downsample_step": 4,
+            "outputs_per_step": 1,
+            "embedding_weight_std": 0.1,
+            "speaker_embedding_weight_std": 0.05,
+            "dropout": 1 - 0.95,
+            "kernel_size": 3,
+            "text_embed_dim": 256,
+            "encoder_channels": 512,
+            "decoder_channels": 256,
+            "converter_channels": 256,
+            "use_guided_attention": True,
+            "guided_attention_sigma": 0.4,
+            "binary_divergence_weight": 0.1,
+            "use_decoder_state_for_postnet_input": True,
+            "max_positions": 1024,
+            "query_position_rate": 2.0,
+            "key_position_rate": 7.6,
+            "key_projection": True,
+            "value_projection": True,
+            "clip_thresh": 0.1,
+            "initial_learning_rate": 5e-4,
+        },
+        "nyanko_ljspeech": {
+            "n_speakers": 1,
+            "downsample_step": 4,
+            "outputs_per_step": 1,
+            "embedding_weight_std": 0.01,
+            "dropout": 1 - 0.95,
+            "kernel_size": 3,
+            "text_embed_dim": 128,
+            "encoder_channels": 256,
+            "decoder_channels": 256,
+            "converter_channels": 256,
+            "use_guided_attention": True,
+            "guided_attention_sigma": 0.2,
+            "binary_divergence_weight": 0.1,
+            "use_decoder_state_for_postnet_input": True,
+            "max_positions": 512,
+            "query_position_rate": 1.0,
+            "key_position_rate": 1.385,
+            "key_projection": False,
+            "value_projection": False,
+            "clip_thresh": 0.1,
+            "initial_learning_rate": 5e-4,
+        },
+    },
+
     # Audio:
     num_mels=80,
-    fmin=125,
-    fmax=7600,
     fft_size=1024,
     hop_size=256,
     sample_rate=22050,
     preemphasis=0.97,
     min_level_db=-100,
     ref_level_db=20,
-    # whether to rescale waveform or not.
-    # Let x is an input waveform, rescaled waveform y is given by:
-    # y = x / np.abs(x).max() * rescaling_max
-    rescaling=False,
-    rescaling_max=0.999,
-    # mel-spectrogram is normalized to [0, 1] for each utterance and clipping may
-    # happen depends on min_level_db and ref_level_db, causing clipping noise.
-    # If False, assertion is added to ensure no clipping happens.
-    allow_clipping_in_normalization=True,
 
     # Model:
     downsample_step=4,  # must be 4 when builder="nyanko"
@@ -67,7 +134,6 @@ hparams = tf.contrib.training.HParams(
     # Note: large converter channels requires significant computational cost
     converter_channels=256,
     query_position_rate=1.0,
-    # can be computed by `compute_timestamp_ratio.py`.
     key_position_rate=1.385,  # 2.37 for jsut
     key_projection=False,
     value_projection=False,
@@ -80,7 +146,7 @@ hparams = tf.contrib.training.HParams(
 
     # Data loader
     pin_memory=True,
-    num_workers=2,  # Set it to 1 when in Windows (MemoryError, THAllocator.c 0x5)
+    num_workers=2,
 
     # Loss
     masked_loss_weight=0.5,  # (1-w)*loss + w * masked_loss
@@ -120,11 +186,6 @@ hparams = tf.contrib.training.HParams(
     # 0 tends to prevent word repretetion, but sometime causes skip words
     window_backward=1,
     power=1.4,  # Power to raise magnitudes to prior to phase retrieval
-
-    # GC:
-    # Forced garbage collection probability
-    # Use only when MemoryError continues in Windows (Disabled by default)
-    #gc_probability = 0.001,
 )
 
 

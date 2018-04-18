@@ -6,7 +6,6 @@ usage: synthesis.py [options] <checkpoint> <text_list_file> <dst_dir>
 
 options:
     --hparams=<parmas>                Hyper parameters [default: ].
-    --preset=<json>                   Path of preset parameters (json).
     --checkpoint-seq2seq=<path>       Load seq2seq model from checkpoint path.
     --checkpoint-postnet=<path>       Load postnet model from checkpoint path.
     --file-name-suffix=<s>            File name suffix [default: ].
@@ -31,7 +30,7 @@ import nltk
 
 # The deepvoice3 model
 from deepvoice3_pytorch import frontend
-from hparams import hparams, hparams_debug_string
+from hparams import hparams
 
 from tqdm import tqdm
 
@@ -53,7 +52,7 @@ def tts(model, text, p=0, speaker_id=None, fast=False):
         model.make_generation_fast_()
 
     sequence = np.array(_frontend.text_to_sequence(text, p=p))
-    sequence = Variable(torch.from_numpy(sequence)).unsqueeze(0).long()
+    sequence = Variable(torch.from_numpy(sequence)).unsqueeze(0)
     text_positions = torch.arange(1, sequence.size(-1) + 1).unsqueeze(0).long()
     text_positions = Variable(text_positions)
     speaker_ids = None if speaker_id is None else Variable(torch.LongTensor([speaker_id]))
@@ -78,15 +77,6 @@ def tts(model, text, p=0, speaker_id=None, fast=False):
     return waveform, alignment, spectrogram, mel
 
 
-def _load(checkpoint_path):
-    if use_cuda:
-        checkpoint = torch.load(checkpoint_path)
-    else:
-        checkpoint = torch.load(checkpoint_path,
-                                map_location=lambda storage, loc: storage)
-    return checkpoint
-
-
 if __name__ == "__main__":
     args = docopt(__doc__)
     print("Command line args:\n", args)
@@ -102,15 +92,18 @@ if __name__ == "__main__":
     speaker_id = args["--speaker_id"]
     if speaker_id is not None:
         speaker_id = int(speaker_id)
-    preset = args["--preset"]
 
-    # Load preset if specified
-    if preset is not None:
-        with open(preset) as f:
-            hparams.parse_json(f.read())
     # Override hyper parameters
     hparams.parse(args["--hparams"])
     assert hparams.name == "deepvoice3"
+
+    # Presets
+    if hparams.preset is not None and hparams.preset != "":
+        preset = hparams.presets[hparams.preset]
+        import json
+        hparams.parse_json(json.dumps(preset))
+        print("Override hyper parameters with preset \"{}\": {}".format(
+            hparams.preset, json.dumps(preset, indent=4)))
 
     _frontend = getattr(frontend, hparams.frontend)
     import train
@@ -122,13 +115,13 @@ if __name__ == "__main__":
 
     # Load checkpoints separately
     if checkpoint_postnet_path is not None and checkpoint_seq2seq_path is not None:
-        checkpoint = _load(checkpoint_seq2seq_path)
+        checkpoint = torch.load(checkpoint_seq2seq_path)
         model.seq2seq.load_state_dict(checkpoint["state_dict"])
-        checkpoint = _load(checkpoint_postnet_path)
+        checkpoint = torch.load(checkpoint_postnet_path)
         model.postnet.load_state_dict(checkpoint["state_dict"])
         checkpoint_name = splitext(basename(checkpoint_seq2seq_path))[0]
     else:
-        checkpoint = _load(checkpoint_path)
+        checkpoint = torch.load(checkpoint_path)
         model.load_state_dict(checkpoint["state_dict"])
         checkpoint_name = splitext(basename(checkpoint_path))[0]
 

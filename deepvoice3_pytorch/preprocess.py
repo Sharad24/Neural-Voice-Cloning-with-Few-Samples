@@ -6,8 +6,6 @@ usage: preprocess.py [options] <name> <in_dir> <out_dir>
 
 options:
     --num_workers=<n>        Num workers.
-    --hparams=<parmas>       Hyper parameters [default: ].
-    --preset=<json>          Path of preset parameters (json).
     -h, --help               Show help message.
 """
 from docopt import docopt
@@ -15,7 +13,7 @@ import os
 from multiprocessing import cpu_count
 from tqdm import tqdm
 import importlib
-from hparams import hparams, hparams_debug_string
+from hparams import hparams
 
 
 def preprocess(mod, in_dir, out_root, num_workers):
@@ -42,18 +40,8 @@ if __name__ == "__main__":
     in_dir = args["<in_dir>"]
     out_dir = args["<out_dir>"]
     num_workers = args["--num_workers"]
-    num_workers = cpu_count() if num_workers is None else int(num_workers)
-    preset = args["--preset"]
+    num_workers = cpu_count() if num_workers is None else num_workers
 
-    # Load preset if specified
-    if preset is not None:
-        with open(preset) as f:
-            hparams.parse_json(f.read())
-    # Override hyper parameters
-    hparams.parse(args["--hparams"])
-    assert hparams.name == "deepvoice3"
-    print(hparams_debug_string())
-
-    assert name in ["jsut", "ljspeech", "vctk", "nikl_m", "nikl_s"]
+    assert name in ["jsut", "ljspeech", "vctk"]
     mod = importlib.import_module(name)
     preprocess(mod, in_dir, out_dir, num_workers)

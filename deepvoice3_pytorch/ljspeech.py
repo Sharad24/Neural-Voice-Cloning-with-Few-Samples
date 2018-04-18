@@ -3,7 +3,6 @@ from functools import partial
 import numpy as np
 import os
 import audio
-from hparams import hparams
 
 
 def build_from_path(in_dir, out_dir, num_workers=1, tqdm=lambda x: x):
@@ -53,9 +52,6 @@ def _process_utterance(out_dir, index, wav_path, text):
 
     # Load the audio to a numpy array:
     wav = audio.load_wav(wav_path)
-
-    if hparams.rescaling:
-        wav = wav / np.abs(wav).max() * hparams.rescaling_max
 
     # Compute the linear-scale spectrogram from the wav:
     spectrogram = audio.spectrogram(wav).astype(np.float32)

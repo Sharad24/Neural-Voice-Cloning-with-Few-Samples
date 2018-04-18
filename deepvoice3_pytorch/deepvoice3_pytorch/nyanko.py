@@ -342,7 +342,6 @@ class Decoder(nn.Module):
     def start_fresh_sequence(self):
         _clear_modules(self.audio_encoder_modules)
         _clear_modules(self.audio_decoder_modules)
-        self.last_conv.clear_buffer()
 
 
 def _clear_modules(modules):

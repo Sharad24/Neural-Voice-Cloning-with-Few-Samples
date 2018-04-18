@@ -6,7 +6,6 @@ options:
     --data-root=<dir>            Directory contains preprocessed features.
     --checkpoint-dir=<dir>       Directory where to save model checkpoints [default: checkpoints].
     --hparams=<parmas>           Hyper parameters [default: ].
-    --preset=<json>              Path of preset parameters (json).
     --checkpoint=<path>          Restore model from checkpoint path if given.
     --checkpoint-seq2seq=<path>  Restore seq2seq model from checkpoint path.
     --checkpoint-postnet=<path>  Restore postnet model from checkpoint path.
@@ -22,8 +21,6 @@ options:
 from docopt import docopt
 
 import sys
-import gc
-import platform
 from os.path import dirname, join
 from tqdm import tqdm, trange
 from datetime import datetime
@@ -132,18 +129,7 @@ class TextDataSource(FileDataSource):
             text, speaker_id = args
         else:
             text = args[0]
-        global _frontend
-        if _frontend is None:
-            _frontend = getattr(frontend, hparams.frontend)
         seq = _frontend.text_to_sequence(text, p=hparams.replace_pronunciation_prob)
-
-        if platform.system() == "Windows":
-            if hasattr(hparams, 'gc_probability'):
-                _frontend = None  # memory leaking prevention in Windows
-                if np.random.rand() < hparams.gc_probability:
-                    gc.collect()  # garbage collection enforced
-                    print("GC done")
-
         if self.multi_speaker:
             return np.asarray(seq, dtype=np.int32), int(speaker_id)
         else:
@@ -610,14 +596,6 @@ def train(model, data_loader, optimizer, writer,
             input_lengths = input_lengths.long().numpy()
             decoder_lengths = target_lengths.long().numpy() // r // downsample_step
 
-            max_seq_len = max(input_lengths.max(), decoder_lengths.max())
-            if max_seq_len >= hparams.max_positions:
-                raise RuntimeError(
-                    """max_seq_len ({}) >= max_posision ({})
-Input text or decoder targget length exceeded the maximum length.
-Please set a larger value for ``max_position`` in hyper parameters.""".format(
-                        max_seq_len, hparams.max_positions))
-
             # Feed data
             x, mel, y = Variable(x), Variable(mel), Variable(y)
             text_positions = Variable(text_positions)
@@ -815,21 +793,12 @@ def build_model():
     return model
 
 
-def _load(checkpoint_path):
-    if use_cuda:
-        checkpoint = torch.load(checkpoint_path)
-    else:
-        checkpoint = torch.load(checkpoint_path,
-                                map_location=lambda storage, loc: storage)
-    return checkpoint
-
-
 def load_checkpoint(path, model, optimizer, reset_optimizer):
     global global_step
     global global_epoch
 
     print("Load checkpoint from: {}".format(path))
-    checkpoint = _load(path)
+    checkpoint = torch.load(path)
     model.load_state_dict(checkpoint["state_dict"])
     if not reset_optimizer:
         optimizer_state = checkpoint["optimizer"]
@@ -843,33 +812,19 @@ def load_checkpoint(path, model, optimizer, reset_optimizer):
 
 
 def _load_embedding(path, model):
-    state = _load(path)["state_dict"]
+    state = torch.load(path)["state_dict"]
     key = "seq2seq.encoder.embed_tokens.weight"
     model.seq2seq.encoder.embed_tokens.weight.data = state[key]
 
+
 # https://discuss.pytorch.org/t/how-to-load-part-of-pre-trained-model/1113/3
-
-
 def restore_parts(path, model):
     print("Restore part of the model from: {}".format(path))
-    state = _load(path)["state_dict"]
+    state = torch.load(path)["state_dict"]
     model_dict = model.state_dict()
     valid_state_dict = {k: v for k, v in state.items() if k in model_dict}
-
-    try:
-        model_dict.update(valid_state_dict)
-        model.load_state_dict(model_dict)
-    except RuntimeError as e:
-        # there should be invalid size of weight(s), so load them per parameter
-        print(str(e))
-        model_dict = model.state_dict()
-        for k, v in valid_state_dict.items():
-            model_dict[k] = v
-            try:
-                model.load_state_dict(model_dict)
-            except RuntimeError as e:
-                print(str(e))
-                warn("{}: may contain invalid size of weight. skipping...".format(k))
+    model_dict.update(valid_state_dict)
+    model.load_state_dict(model_dict)
 
 
 if __name__ == "__main__":
@@ -883,7 +838,6 @@ if __name__ == "__main__":
     checkpoint_restore_parts = args["--restore-parts"]
     speaker_id = args["--speaker-id"]
     speaker_id = int(speaker_id) if speaker_id is not None else None
-    preset = args["--preset"]
 
     data_root = args["--data-root"]
     if data_root is None:
@@ -906,21 +860,18 @@ if __name__ == "__main__":
     else:
         assert False, "must be specified wrong args"
 
-    # Load preset if specified
-    if preset is not None:
-        with open(preset) as f:
-            hparams.parse_json(f.read())
     # Override hyper parameters
     hparams.parse(args["--hparams"])
-
-    # Preventing Windows specific error such as MemoryError
-    # Also reduces the occurrence of THAllocator.c 0x05 error in Widows build of PyTorch
-    if platform.system() == "Windows":
-        print("Windows Detected - num_workers set to 1")
-        hparams.set_hparam('num_workers', 1)
-
-    assert hparams.name == "deepvoice3"
     print(hparams_debug_string())
+    assert hparams.name == "deepvoice3"
+
+    # Presets
+    if hparams.preset is not None and hparams.preset != "":
+        preset = hparams.presets[hparams.preset]
+        import json
+        hparams.parse_json(json.dumps(preset))
+        print("Override hyper parameters with preset \"{}\": {}".format(
+            hparams.preset, json.dumps(preset, indent=4)))
 
     _frontend = getattr(frontend, hparams.frontend)
 
@@ -973,11 +924,7 @@ if __name__ == "__main__":
 
     # Setup summary writer for tensorboard
     if log_event_path is None:
-        if platform.system() == "Windows":
-            log_event_path = "log/run-test" + \
-                str(datetime.now()).replace(" ", "_").replace(":", "_")
-        else:
-            log_event_path = "log/run-test" + str(datetime.now()).replace(" ", "_")
+        log_event_path = "log/run-test" + str(datetime.now()).replace(" ", "_")
     print("Los event path: {}".format(log_event_path))
     writer = SummaryWriter(log_dir=log_event_path)
 

@@ -5,22 +5,19 @@ import setuptools.command.develop
 import setuptools.command.build_py
 import os
 import subprocess
-from os.path import exists
 
-version = '0.0.5'
+version = '0.0.1'
 
 # Adapted from https://github.com/pytorch/pytorch
 cwd = os.path.dirname(os.path.abspath(__file__))
-if os.getenv('DEEPVOICE3_PYTORCH_BUILD_VERSION'):
-    version = os.getenv('DEEPVOICE3_PYTORCH_BUILD_VERSION')
+if os.getenv('TACOTRON_BUILD_VERSION'):
+    version = os.getenv('TACOTRON_BUILD_VERSION')
 else:
     try:
         sha = subprocess.check_output(
             ['git', 'rev-parse', 'HEAD'], cwd=cwd).decode('ascii').strip()
         version += '+' + sha[:7]
     except subprocess.CalledProcessError:
-        pass
-    except IOError:  # FileNotFoundError for python 3
         pass
 
 
@@ -46,31 +43,9 @@ class develop(setuptools.command.develop.develop):
         setuptools.command.develop.develop.run(self)
 
 
-def create_readme_rst():
-    global cwd
-    try:
-        subprocess.check_call(
-            ["pandoc", "--from=markdown", "--to=rst", "--output=README.rst",
-             "README.md"], cwd=cwd)
-        print("Generated README.rst from README.md using pandoc.")
-    except subprocess.CalledProcessError:
-        pass
-    except OSError:
-        pass
-
-
-if not exists('README.rst'):
-    create_readme_rst()
-
-if exists('README.rst'):
-    README = open('README.rst', 'rb').read().decode("utf-8")
-else:
-    README = ''
-
 setup(name='deepvoice3_pytorch',
       version=version,
-      description='PyTorch implementation of convolutional networks-based text-to-speech synthesis models.',
-      long_description=README,
+      description='PyTorch implementation of Tacotron speech synthesis model.',
       packages=find_packages(),
       cmdclass={
           'build_py': build_py,
@@ -79,20 +54,19 @@ setup(name='deepvoice3_pytorch',
       install_requires=[
           "numpy",
           "scipy",
-          "torch >= 0.3.0",
           "unidecode",
           "inflect",
           "librosa",
           "numba",
           "lws <= 1.0",
-          "nltk",
       ],
       extras_require={
           "train": [
               "docopt",
               "tqdm",
               "tensorboardX",
-              "nnmnkwii >= 0.0.11",
+              "nnmnkwii >= 0.0.9",
+              "nltk",
           ],
           "test": [
               "nose",
