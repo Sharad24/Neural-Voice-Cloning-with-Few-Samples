@@ -9,7 +9,7 @@ import librosa.display
 # from IPython.display import Audio
 # need this for English text processing frontend
 import nltk
-import numpy as np
+
 import pickle
 
 
@@ -133,7 +133,7 @@ def generate_cloned_samples(cloning_texts_location  = None, no_speakers = 108 , 
 
 
     cloning_texts = ["this is the first" , "this is the first"]
-    if(cloning_texts_location == None)
+    if(cloning_texts_location == None):
         cloning_texts_location = "./Cloning_Audio/cloning_text.txt"
 
     # cloning_texts = open("./Cloning_Audio/cloning_text.txt").splitlines()
