@@ -1,6 +1,5 @@
 # Deepvoice3_pytorch
 
-[![PyPI](https://img.shields.io/pypi/v/deepvoice3_pytorch.svg)](https://pypi.python.org/pypi/deepvoice3_pytorch)
 [![Build Status](https://travis-ci.org/r9y9/deepvoice3_pytorch.svg?branch=master)](https://travis-ci.org/r9y9/deepvoice3_pytorch)
 
 PyTorch implementation of convolutional networks-based text-to-speech synthesis models:
@@ -8,13 +7,7 @@ PyTorch implementation of convolutional networks-based text-to-speech synthesis 
 1. [arXiv:1710.07654](https://arxiv.org/abs/1710.07654): Deep Voice 3: 2000-Speaker Neural Text-to-Speech.
 2. [arXiv:1710.08969](https://arxiv.org/abs/1710.08969): Efficiently Trainable Text-to-Speech System Based on Deep Convolutional Networks with Guided Attention.
 
-Audio samples are available at https://r9y9.github.io/deepvoice3_pytorch/.
-
-## Online TTS demo
-
-A notebook supposed to be executed on https://colab.research.google.com is available:
-
-- [DeepVoice3: Multi-speaker text-to-speech demo](https://colab.research.google.com/github/r9y9/Colaboratory/blob/master/DeepVoice3_multi_speaker_TTS_en_demo.ipynb)
+Current progress and planned TO-DOs can be found at [#1](https://github.com/r9y9/deepvoice3_pytorch/issues/1).
 
 ## Highlights
 
@@ -24,31 +17,37 @@ A notebook supposed to be executed on https://colab.research.google.com is avail
 - Preprocessor for [LJSpeech (en)](https://keithito.com/LJ-Speech-Dataset/), [JSUT (jp)](https://sites.google.com/site/shinnosuketakamichi/publication/jsut) and [VCTK](http://homepages.inf.ed.ac.uk/jyamagis/page3/page58/page58.html) datasets
 - Language-dependent frontend text processor for English and Japanese
 
-### Samples
+## Audio samples
 
-- [Ja Step000380000 Predicted](https://soundcloud.com/user-623907374/ja-step000380000-predicted)
-- [Ja Step000370000 Predicted](https://soundcloud.com/user-623907374/ja-step000370000-predicted)
-- [Ko_single Step000410000 Predicted](https://soundcloud.com/user-623907374/ko-step000410000-predicted)
-- [Ko_single Step000400000 Predicted](https://soundcloud.com/user-623907374/ko-step000400000-predicted)
-- [Ko_multi Step001680000 Predicted](https://soundcloud.com/user-623907374/step001680000-predicted)
-- [Ko_multi Step001700000 Predicted](https://soundcloud.com/user-623907374/step001700000-predicted)
+- [DeepVoice3] Samples from the model trained on LJ Speech Dataset: https://www.dropbox.com/sh/uq4tsfptxt0y17l/AADBL4LsPJRP2PjAAJRSH5eta?dl=0
+- [Nyanko] Samples from the model trained on LJ Speech Dataset: https://www.dropbox.com/sh/q9xfgscgh3k5lqa/AACPgWCprBfNgjRravscdDYCa?dl=0
 
 ## Pretrained models
 
-**NOTE**: pretrained models are not compatible to master. To be updated soon.
-
  | URL | Model      | Data     | Hyper paramters                                  | Git commit | Steps  |
  |-----|------------|----------|--------------------------------------------------|----------------------|--------|
- | [link](https://www.dropbox.com/s/cs6d070ommy2lmh/20171213_deepvoice3_checkpoint_step000210000.pth?dl=0) | DeepVoice3 | LJSpeech | `builder=deepvoice3,preset=deepvoice3_ljspeech` | [4357976](https://github.com/r9y9/deepvoice3_pytorch/tree/43579764f35de6b8bac2b18b52a06e4e11b705b2)| 210k ~ |
- |  [link](https://www.dropbox.com/s/1y8bt6bnggbzzlp/20171129_nyanko_checkpoint_step000585000.pth?dl=0)   | Nyanko     | LJSpeech | `builder=nyanko,preset=nyanko_ljspeech`     | [ba59dc7](https://github.com/r9y9/deepvoice3_pytorch/tree/ba59dc75374ca3189281f6028201c15066830116) | 585k |
-  |  [link](https://www.dropbox.com/s/uzmtzgcedyu531k/20171222_deepvoice3_vctk108_checkpoint_step000300000.pth?dl=0)   | Multi-speaker DeepVoice3     | VCTK | `builder=deepvoice3_multispeaker,preset=deepvoice3_vctk`     | [0421749](https://github.com/r9y9/deepvoice3_pytorch/tree/0421749af908905d181f089f06956fddd0982d47) | 300k + 300k |
+ | [link](https://www.dropbox.com/s/4r207fq6s8gt2sl/20171213_deepvoice3_checkpoint_step00021000.pth?dl=0) | DeepVoice3 | LJSpeech | `builder=deepvoice3,preset=deepvoice3_ljspeech` | [4357976](https://github.com/r9y9/deepvoice3_pytorch/tree/43579764f35de6b8bac2b18b52a06e4e11b705b2)| 210000 |
+ |  [link](https://www.dropbox.com/s/j8ywsvs3kny0s0x/20171129_nyanko_checkpoint_step000585000.pth?dl=0)   | Nyanko     | LJSpeech | `builder=nyanko,preset=nyanko_ljspeech`     | [ba59dc7](https://github.com/r9y9/deepvoice3_pytorch/tree/ba59dc75374ca3189281f6028201c15066830116) | 585000 |
+  |  [TODO](https://www.dropbox.com/s/j8ywsvs3kny0s0x/20171129_nyanko_checkpoint_step000585000.pth?dl=0)   | Multi-speaker DeepVoice3     | VCTK | `builder=deepvoice3_vctk,preset=deepvoice3_vctk`     | [TODO](https://github.com/r9y9/deepvoice3_pytorch/tree/ba59dc75374ca3189281f6028201c15066830116) | 300000 |
 
-See "Synthesize from a checkpoint" section in the README for how to generate speech samples. Please make sure that you are on the specific git commit noted above.
+See the `Synthesize from a checkpoint` section in the README for how to generate speech samples. Please make sure that you are on the specific git commit noted above.
 
 ## Notes on hyper parameters
 
 - Default hyper parameters, used during preprocessing/training/synthesis stages, are turned for English TTS using LJSpeech dataset. You will have to change some of parameters if you want to try other datasets. See `hparams.py` for details.
 - `builder` specifies which model you want to use. `deepvoice3`, `deepvoice3_multispeaker` [1] and `nyanko` [2] are surpprted.
+- `presets` represents hyper parameters known to work well for particular dataset/model from my experiments. Before you try to find your best parameters, I would recommend you to try those presets by setting `preset=${name}`. e.g., for LJSpeech, you can try either
+```
+python train.py --data-root=./data/ljspeech --checkpoint-dir=checkpoints_deepvoice3 \
+    --hparams="builder=deepvoice3,preset=deepvoice3_ljspeech" \
+    --log-event-path=log/deepvoice3_preset
+```
+or
+```
+python train.py --data-root=./data/ljspeech --checkpoint-dir=checkpoints_nyanko \
+    --hparams="builder=nyanko,preset=nyanko_ljspeech" \
+    --log-event-path=log/nyanko_preset
+```
 - Hyper parameters described in DeepVoice3 paper for single speaker didn't work for LJSpeech dataset, so I changed a few things. Add dilated convolution, more channels, more layers and add guided attention loss, etc. See code for details. The changes are also applied for multi-speaker model.
 - Multiple attention layers are hard to learn. Empirically, one or two (first and last) attention layers seems enough.
 - With guided attention (see https://arxiv.org/abs/1710.08969), alignments get monotonic more quickly and reliably if we use multiple attention layers. With guided attention, I can confirm five attention layers get monotonic, though I cannot get speech quality improvements.
@@ -58,9 +57,10 @@ See "Synthesize from a checkpoint" section in the README for how to generate spe
 ## Requirements
 
 - Python 3
-- CUDA >= 8.0
+- PyTorch >= v0.3
 - TensorFlow >= v1.3
-- [nnmnkwii](https://github.com/r9y9/nnmnkwii) >= v0.0.11
+- [tensorboard-pytorch](https://github.com/lanpa/tensorboard-pytorch) (master)
+- [nnmnkwii](https://github.com/r9y9/nnmnkwii) >= v0.0.9
 - [MeCab](http://taku910.github.io/mecab/) (Japanese only)
 
 ## Installation
@@ -68,93 +68,74 @@ See "Synthesize from a checkpoint" section in the README for how to generate spe
 Please install packages listed above first, and then
 
 ```
-git clone https://github.com/r9y9/deepvoice3_pytorch && cd deepvoice3_pytorch
+git clone https://github.com/r9y9/deepvoice3_pytorch
 pip install -e ".[train]"
 ```
 
+If you want Japanese text processing frontend, install additional dependencies by:
+
+```
+pip install -e ".[jp]"
+```
+
 ## Getting started
-
-### Preset parameters
-
-There are many hyper parameters to be turned depends on what model and data you are working on. For typical datasets and models, parameters that known to work good (**preset**) are provided in the repository. See `presets` directory for details. Notice that
-
-1. `preprocess.py`
-2. `train.py`
-3. `synthesis.py`
-
-accepts `--preset=<json>` optional parameter, which specifies where to load preset parameters. If you are going to use preset parameters, then you must use same `--preset=<json>` throughout preprocessing, training and evaluation. e.g.,
-
-```
-python preprocess.py --preset=presets/deepvoice3_ljspeech.json ljspeech ~/data/LJSpeech-1.0
-python train.py --preset=presets/deepvoice3_ljspeech.json --data-root=./data/ljspeech
-```
-
-instead of
-
-```
-python preprocess.py ljspeech ~/data/LJSpeech-1.0
-# warning! this may use different hyper parameters used at preprocessing stage
-python train.py --preset=presets/deepvoice3_ljspeech.json --data-root=./data/ljspeech
-```
 
 ### 0. Download dataset
 
 - LJSpeech (en): https://keithito.com/LJ-Speech-Dataset/
 - VCTK (en): http://homepages.inf.ed.ac.uk/jyamagis/page3/page58/page58.html
 - JSUT (jp): https://sites.google.com/site/shinnosuketakamichi/publication/jsut
-- NIKL (ko): http://www.korean.go.kr/front/board/boardStandardView.do?board_id=4&mn_id=17&b_seq=464
 
 ### 1. Preprocessing
 
-Usage:
+Preprocessing can be done by `preprocess.py`. Usage is:
 
 ```
-python preprocess.py ${dataset_name} ${dataset_path} ${out_dir} --preset=<json>
+python preprocess.py ${dataset_name} ${dataset_path} ${out_dir}
 ```
 
-Supported `${dataset_name}`s are:
+Supported `${dataset_name}`s for now are
 
 - `ljspeech` (en, single speaker)
 - `vctk` (en, multi-speaker)
 - `jsut` (jp, single speaker)
-- `nikl_m` (ko, multi-speaker)
-- `nikl_s` (ko, single speaker)
 
-Assuming you use preset parameters known to work good for LJSpeech dataset / DeepVoice3 and have data in `~/data/LJSpeech-1.0`, then you can preprocess data by:
+Suppose you will want to preprocess LJSpeech dataset and have it in `~/data/LJSpeech-1.0`, then you can preprocess data by:
 
 ```
-python preprocess.py --preset=presets/deepvoice3_ljspeech.json ljspeech ~/data/LJSpeech-1.0/ ./data/ljspeech
+python preprocess.py ljspeech ~/data/LJSpeech-1.0/ ./data/ljspeech
 ```
 
 When this is done, you will see extracted features (mel-spectrograms and linear spectrograms) in `./data/ljspeech`.
 
 ### 2. Training
 
-Usage:
+Basic usage of `train.py` is:
 
 ```
-python train.py --data-root=${data-root} --preset=<json> --hparams="parameters you may want to override"
+python train.py --data-root=${data-root} --hparams="parameters you want to override"
 ```
 
-Suppose you build a DeepVoice3-style model using LJSpeech dataset, then you can train your model by:
+Suppose you will want to build a DeepVoice3-style model using LJSpeech dataset with default hyper parameters, then you can train your model by:
 
 ```
-python train.py --preset=presets/deepvoice3_ljspeech.json --data-root=./data/ljspeech/
+python train.py --data-root=./data/ljspeech/ --hparams="builder=deepvoice3,preset=deepvoice3_ljspeech"
 ```
 
-Model checkpoints (.pth) and alignments (.png) are saved in `./checkpoints` directory per 10000 steps by default.
+Model checkpoints (.pth) and alignments (.png) are saved in `./checkpoints` directory per 5000 steps by default.
 
-#### NIKL
-
-Pleae check [this](https://github.com/homink/deepvoice3_pytorch/blob/master/nikl_preprocess/README.md) in advance and follow the commands below.
+If you are building a Japaneses TTS model, then for example,
 
 ```
-python preprocess.py nikl_s ${your_nikl_root_path} data/nikl_s --preset=presets/deepvoice3_nikls.json
-
-python train.py --data-root=./data/nikl_s --checkpoint-dir checkpoint_nikl_s --preset=presets/deepvoice3_nikls.json
+python train.py --data-root=./data/jsut --hparams="frontend=jp" --hparams="builder=deepvoice3,preset=deepvoice3_ljspeech"
 ```
 
-### 4. Monitor with Tensorboard
+`frontend=jp` tell the training script to use Japanese text processing frontend. Default is `en` and uses English text processing frontend.
+
+Note that there are many hyper parameters and design choices. Some are configurable by `hparams.py` and some are hardcoded in the source (e.g., dilation factor for each convolution layer). If you find better hyper parameters, please let me know!
+
+
+### 4. Moniter with Tensorboard
 
 Logs are dumped in `./log` directory by default. You can monitor logs by tensorboard:
 
@@ -167,7 +148,7 @@ tensorboard --logdir=log
 Given a list of text, `synthesis.py` synthesize audio signals from trained model. Usage is:
 
 ```
-python synthesis.py ${checkpoint_path} ${text_list.txt} ${output_dir} --preset=<json>
+python synthesis.py ${checkpoint_path} ${text_list.txt} ${output_dir}
 ```
 
 Example test_list.txt:
@@ -182,10 +163,7 @@ A text-to-speech synthesis system typically consists of multiple stages, such as
 
 ### Multi-speaker model
 
-VCTK and NIKL are supported dataset for building a multi-speaker model.
-
-#### VCTK
-Since some audio samples in VCTK have long silences that affect performance, it's recommended to do phoneme alignment and remove silences according to [vctk_preprocess](vctk_preprocess/).
+Currently VCTK is the only supported dataset for building a multi-speaker model. Since some audio samples in VCTK have long silences that affect performance, it's recommended to do phoneme alignment and remove silences according to [vctk_preprocess/README.md](vctk_preprocess/README.md).
 
 Once you have phoneme alignment for each utterance, you can extract features by:
 
@@ -197,7 +175,7 @@ Now that you have data prepared, then you can train a multi-speaker version of D
 
 ```
 python train.py --data-root=./data/vctk --checkpoint-dir=checkpoints_vctk \
-   --preset=presets/deepvoice3_vctk.json \
+   --hparams="preset=deepvoice3_vctk,builder=deepvoice3_multispeaker" \
    --log-event-path=log/deepvoice3_multispeaker_vctk_preset
 ```
 
@@ -205,30 +183,12 @@ If you want to reuse learned embedding from other dataset, then you can do this 
 
 ```
 python train.py --data-root=./data/vctk --checkpoint-dir=checkpoints_vctk \
-   --preset=presets/deepvoice3_vctk.json \
+   --hparams="preset=deepvoice3_vctk,builder=deepvoice3_multispeaker" \
    --log-event-path=log/deepvoice3_multispeaker_vctk_preset \
    --load-embedding=20171213_deepvoice3_checkpoint_step000210000.pth
 ```
 
 This may improve training speed a bit.
-
-#### NIKL
-
-You will be able to obtain cleaned-up audio samples in ../nikl_preprocoess. Details are found in [here](https://github.com/homink/speech.ko).
-
-
-Once NIKL corpus is ready to use from the preprocessing, you can extract features by:
-
-```
-python preprocess.py nikl_m ${your_nikl_root_path} data/nikl_m
-```
-
-Now that you have data prepared, then you can train a multi-speaker version of DeepVoice3 by:
-
-```
-python train.py --data-root=./data/nikl_m  --checkpoint-dir checkpoint_nikl_m \
-   --preset=presets/deepvoice3_niklm.json
-```
 
 ### Speaker adaptation
 
@@ -236,7 +196,7 @@ If you have very limited data, then you can consider to try fine-turn pre-traine
 
 ```
 python train.py --data-root=./data/vctk --checkpoint-dir=checkpoints_vctk_adaptation \
-    --preset=presets/deepvoice3_ljspeech.json \
+    --hparams="builder=deepvoice3,preset=deepvoice3_ljspeech" \
     --log-event-path=log/deepvoice3_vctk_adaptation \
     --restore-parts="20171213_deepvoice3_checkpoint_step000210000.pth"
     --speaker-id=0

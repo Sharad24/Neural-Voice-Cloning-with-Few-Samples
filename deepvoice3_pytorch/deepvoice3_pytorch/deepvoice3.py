@@ -72,7 +72,7 @@ class Encoder(nn.Module):
         assert self.n_speakers == 1 or speaker_embed is not None
 
         # embed text_sequences
-        x = self.embed_tokens(text_sequences.long())
+        x = self.embed_tokens(text_sequences)
         x = F.dropout(x, p=self.dropout, training=self.training)
 
         # expand speaker embedding for all time steps
@@ -487,17 +487,8 @@ class Decoder(nn.Module):
         return outputs, alignments, dones, decoder_states
 
     def start_fresh_sequence(self):
-        _clear_modules(self.preattention)
-        _clear_modules(self.convolutions)
-        self.last_conv.clear_buffer()
-
-
-def _clear_modules(modules):
-    for m in modules:
-        try:
-            m.clear_buffer()
-        except AttributeError as e:
-            pass
+        for conv in self.convolutions:
+            conv.clear_buffer()
 
 
 class Converter(nn.Module):
