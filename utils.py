@@ -38,84 +38,84 @@ def visualize(alignment, spectrogram):
   tight_layout()
   colorbar()
 
-def generate_cloned_samples(cloning_texts_location  = None, no_speakers = 108 , fast = True, p =0 ):
+def generate_cloned_samples(model,cloning_texts_location  = None, no_speakers = 108 , fast = True, p =0 ):
 
-    # Clone
-    name = "deepvoice3_pytorch"
-    # if not exists(name):
-    #   print("Clone the repo!!")
-    # else:
-    #     print("Exists!")
-
-    # Change working directory to the project dir
-    os.chdir(join(expanduser("."), name))
-
-    import hparams
-    import json
-    import synthesis
-    import train
-    from deepvoice3_pytorch import frontend
-    from train import build_model
-    from train import restore_parts, load_checkpoint
-    from synthesis import tts as _tts
-
-
-
-    # get_ipython().system(u' python3 -m nltk.downloader cmudict')
-
-    checkpoint_path = "20171222_deepvoice3_vctk108_checkpoint_step000300000.pth"
-
-    if not exists(checkpoint_path):
-        print("Dowload the Pre-Trained Network!!")
-    #   !curl -O -L "https://www.dropbox.com/s/uzmtzgcedyu531k/20171222_deepvoice3_vctk108_checkpoint_step000300000.pth"
-
-
-
-    # Copy preset file (json) from master
-    # The preset file describes hyper parameters
-    # get_ipython().system(u' git checkout master --quiet')
-    preset = "./presets/deepvoice3_vctk.json"
-    # get_ipython().system(u' cp -v $preset .')
-    # preset = "./deepvoice3_vctk.json"
-
-    # And then git checkout to the working commit
-    # This is due to the model was trained a few months ago and it's not compatible
-    # with the current master.
-    # ! git checkout 0421749 --quiet
-    # ! pip install -q -e .
-
-
-
-
-    # print(hparams.hparams.get_model_structure())
-    # Newly added params. Need to inject dummy values
-    for dummy, v in [("fmin", 0), ("fmax", 0), ("rescaling", False),
-                     ("rescaling_max", 0.999),
-                     ("allow_clipping_in_normalization", False)]:
-      #if hparams.hparams.get(dummy) is None:
-        hparams.hparams.add_hparam(dummy, v)
-
-    # Load parameters from preset
-    with open(preset) as f:
-      hparams.hparams.parse_json(f.read())
-
-    # Tell we are using multi-speaker DeepVoice3
-    hparams.hparams.builder = "deepvoice3_multispeaker"
-
-    # Inject frontend text processor
-
-    synthesis._frontend = getattr(frontend, "en")
-    train._frontend =  getattr(frontend, "en")
-
-    # alises
-    fs = hparams.hparams.sample_rate
-    hop_length = hparams.hparams.hop_size
-
-
-
-    model = build_model()
-    model = load_checkpoint(checkpoint_path, model, None, True)
-
+    # # Clone
+    # name = "deepvoice3_pytorch"
+    # # if not exists(name):
+    # #   print("Clone the repo!!")
+    # # else:
+    # #     print("Exists!")
+    #
+    # # Change working directory to the project dir
+    # os.chdir(join(expanduser("."), name))
+    #
+    # import hparams
+    # import json
+    from .deepvoice3_pytorch import synthesis
+    # import train
+    # from deepvoice3_pytorch import frontend
+    # from train import build_model
+    # from train import restore_parts, load_checkpoint
+    from .deepvoice3_pytorch/synthesis import tts as _tts
+    #
+    #
+    #
+    # # get_ipython().system(u' python3 -m nltk.downloader cmudict')
+    #
+    # checkpoint_path = "20171222_deepvoice3_vctk108_checkpoint_step000300000.pth"
+    #
+    # if not exists(checkpoint_path):
+    #     print("Dowload the Pre-Trained Network!!")
+    # #   !curl -O -L "https://www.dropbox.com/s/uzmtzgcedyu531k/20171222_deepvoice3_vctk108_checkpoint_step000300000.pth"
+    #
+    #
+    #
+    # # Copy preset file (json) from master
+    # # The preset file describes hyper parameters
+    # # get_ipython().system(u' git checkout master --quiet')
+    # preset = "./presets/deepvoice3_vctk.json"
+    # # get_ipython().system(u' cp -v $preset .')
+    # # preset = "./deepvoice3_vctk.json"
+    #
+    # # And then git checkout to the working commit
+    # # This is due to the model was trained a few months ago and it's not compatible
+    # # with the current master.
+    # # ! git checkout 0421749 --quiet
+    # # ! pip install -q -e .
+    #
+    #
+    #
+    #
+    # # print(hparams.hparams.get_model_structure())
+    # # Newly added params. Need to inject dummy values
+    # for dummy, v in [("fmin", 0), ("fmax", 0), ("rescaling", False),
+    #                  ("rescaling_max", 0.999),
+    #                  ("allow_clipping_in_normalization", False)]:
+    #   #if hparams.hparams.get(dummy) is None:
+    #     hparams.hparams.add_hparam(dummy, v)
+    #
+    # # Load parameters from preset
+    # with open(preset) as f:
+    #   hparams.hparams.parse_json(f.read())
+    #
+    # # Tell we are using multi-speaker DeepVoice3
+    # hparams.hparams.builder = "deepvoice3_multispeaker"
+    #
+    # # Inject frontend text processor
+    #
+    # synthesis._frontend = getattr(frontend, "en")
+    # train._frontend =  getattr(frontend, "en")
+    #
+    # # alises
+    # fs = hparams.hparams.sample_rate
+    # hop_length = hparams.hparams.hop_size
+    #
+    #
+    #
+    # model = build_model()
+    # model = load_checkpoint(checkpoint_path, model, None, True)
+    #
 
 
 
