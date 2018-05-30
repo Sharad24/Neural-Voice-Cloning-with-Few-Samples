@@ -14,7 +14,7 @@ import pickle
 
 
 def tts(model, text, p=0, speaker_id=0, fast=True, figures=True):
-  from synthesis import tts as _tts
+  from dv3.synthesis import tts as _tts
   waveform, alignment, spectrogram, mel = _tts(model, text, p, speaker_id, fast)
   if figures:
       visualize(alignment, spectrogram)
@@ -52,12 +52,12 @@ def generate_cloned_samples(model,cloning_texts_location  = None, no_speakers = 
     #
     # import hparams
     # import json
-    from .deepvoice3_pytorch import synthesis
+    import dv3.sythesis
     # import train
     # from deepvoice3_pytorch import frontend
     # from train import build_model
     # from train import restore_parts, load_checkpoint
-    from .deepvoice3_pytorch/synthesis import tts as _tts
+    from syn import tts as _tts
     #
     #
     #
