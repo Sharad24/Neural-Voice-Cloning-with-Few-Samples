@@ -66,13 +66,13 @@ def tts(model, text, p=0, speaker_id=None, fast=False):
         sequence, text_positions=text_positions, speaker_ids=speaker_ids)
 
     linear_output = linear_outputs[0].cpu().data.numpy()
-    spectrogram = audio._denormalize(linear_output)
+    spectrogram = dv3.audio._denormalize(linear_output)
     alignment = alignments[0].cpu().data.numpy()
     mel = mel_outputs[0].cpu().data.numpy()
-    mel = audio._denormalize(mel)
+    mel = dv3.audio._denormalize(mel)
 
     # Predicted audio signal
-    waveform = audio.inv_spectrogram(linear_output.T)
+    waveform = dv3.audio.inv_spectrogram(linear_output.T)
 
     return waveform, alignment, spectrogram, mel
 
@@ -106,9 +106,9 @@ if __name__ == "__main__":
             hparams.preset, json.dumps(preset, indent=4)))
 
     _frontend = getattr(frontend, hparams.frontend)
-    import train
-    train._frontend = _frontend
-    from train import plot_alignment, build_model
+    import dv3.train
+    dv3.train._frontend = _frontend
+    from dv3.train import plot_alignment, build_model
 
     # Model
     model = build_model()
@@ -142,7 +142,7 @@ if __name__ == "__main__":
                                                         file_name_suffix))
             plot_alignment(alignment.T, dst_alignment_path,
                            info="{}, {}".format(hparams.builder, basename(checkpoint_path)))
-            audio.save_wav(waveform, dst_wav_path)
+            dv3.audio.save_wav(waveform, dst_wav_path)
             from os.path import basename, splitext
             name = splitext(basename(text_list_file_path))[0]
             if output_html:

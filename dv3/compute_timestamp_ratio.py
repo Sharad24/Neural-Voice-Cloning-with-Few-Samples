@@ -9,9 +9,9 @@ options:
 from docopt import docopt
 import sys
 import numpy as np
-from hparams import hparams, hparams_debug_string
-import train
-from train import TextDataSource, MelSpecDataSource
+from dv3.hparams import hparams, hparams_debug_string
+import dv3.train
+from dv3.train import TextDataSource, MelSpecDataSource
 from nnmnkwii.datasets import FileSourceDataset
 from tqdm import trange
 from dv3.deepvoice3_pytorch import frontend

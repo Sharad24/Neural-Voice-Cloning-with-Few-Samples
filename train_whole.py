@@ -168,7 +168,7 @@ if __name__ == "__main__":
 
     #Load Deep Voice 3
     # Pre Trained Model
-    dv3_model = build_deepvoice_3()
+    dv3_model = build_deepvoice_3(True)
     # all_speakers = generate_cloned_samples(dv3_model,
     #                                     "./Cloning_Audio/cloning_text.txt",
     #                                     108,True,0)

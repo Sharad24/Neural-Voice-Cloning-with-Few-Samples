@@ -5,7 +5,6 @@ inflect
 librosa
 numba
 lws<=1.0
-nltk
 
 [jp]
 jaconv
@@ -18,4 +17,5 @@ nose
 docopt
 tqdm
 tensorboardX
-nnmnkwii>=0.0.11
+nnmnkwii>=0.0.9
+nltk
