@@ -53,7 +53,7 @@ def _process_utterance(out_dir, index, speaker_id, wav_path, text):
     sr = hparams.sample_rate
 
     # Load the audio to a numpy array:
-    wav = audio.load_wav(wav_path)
+    wav = dv3.audio.load_wav(wav_path)
 
     lab_path = wav_path.replace("wav48/", "lab/").replace(".wav", ".lab")
 
@@ -68,11 +68,11 @@ def _process_utterance(out_dir, index, speaker_id, wav_path, text):
         wav, _ = librosa.effects.trim(wav, top_db=15)
 
     # Compute the linear-scale spectrogram from the wav:
-    spectrogram = audio.spectrogram(wav).astype(np.float32)
+    spectrogram = dv3.audio.spectrogram(wav).astype(np.float32)
     n_frames = spectrogram.shape[1]
 
     # Compute a mel-scale spectrogram from the wav:
-    mel_spectrogram = audio.melspectrogram(wav).astype(np.float32)
+    mel_spectrogram = dv3.audio.melspectrogram(wav).astype(np.float32)
 
     # Write the spectrograms to disk:
     spectrogram_filename = 'vctk-spec-%05d.npy' % index

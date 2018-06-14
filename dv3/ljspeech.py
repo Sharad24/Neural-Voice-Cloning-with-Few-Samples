@@ -51,14 +51,14 @@ def _process_utterance(out_dir, index, wav_path, text):
     '''
 
     # Load the audio to a numpy array:
-    wav = audio.load_wav(wav_path)
+    wav = dv3.audio.load_wav(wav_path)
 
     # Compute the linear-scale spectrogram from the wav:
-    spectrogram = audio.spectrogram(wav).astype(np.float32)
+    spectrogram = dv3.audio.spectrogram(wav).astype(np.float32)
     n_frames = spectrogram.shape[1]
 
     # Compute a mel-scale spectrogram from the wav:
-    mel_spectrogram = audio.melspectrogram(wav).astype(np.float32)
+    mel_spectrogram = dv3.audio.melspectrogram(wav).astype(np.float32)
 
     # Write the spectrograms to disk:
     spectrogram_filename = 'ljspeech-spec-%05d.npy' % index

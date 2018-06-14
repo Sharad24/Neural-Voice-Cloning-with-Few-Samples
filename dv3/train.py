@@ -375,7 +375,7 @@ def eval_model(global_step, writer, model, checkpoint_dir, ismultispeaker):
         "Please call Stella.",
         "Some have accepted this as a miracle without any physical explanation.",
     ]
-    import synthesis
+    import dv3.synthesis
     synthesis._frontend = _frontend
 
     eval_output_dir = join(checkpoint_dir, "eval")
@@ -405,7 +405,7 @@ def eval_model(global_step, writer, model, checkpoint_dir, ismultispeaker):
             # Audio
             path = join(eval_output_dir, "step{:09d}_text{}_{}_predicted.wav".format(
                 global_step, idx, speaker_str))
-            audio.save_wav(signal, path)
+            dv3.audio.save_wav(signal, path)
 
             try:
                 writer.add_audio("(Eval) Predicted audio signal {}_{}".format(idx, speaker_str),
@@ -451,17 +451,17 @@ def save_states(global_step, writer, mel_outputs, linear_outputs, attn, mel, y,
     # Predicted mel spectrogram
     if mel_outputs is not None:
         mel_output = mel_outputs[idx].cpu().data.numpy()
-        mel_output = prepare_spec_image(audio._denormalize(mel_output))
+        mel_output = prepare_spec_image(dv3.audio._denormalize(mel_output))
         writer.add_image("Predicted mel spectrogram", mel_output, global_step)
 
     # Predicted spectrogram
     if linear_outputs is not None:
         linear_output = linear_outputs[idx].cpu().data.numpy()
-        spectrogram = prepare_spec_image(audio._denormalize(linear_output))
+        spectrogram = prepare_spec_image(dv3.audio._denormalize(linear_output))
         writer.add_image("Predicted linear spectrogram", spectrogram, global_step)
 
         # Predicted audio signal
-        signal = audio.inv_spectrogram(linear_output.T)
+        signal = dv3.audio.inv_spectrogram(linear_output.T)
         signal /= np.max(np.abs(signal))
         path = join(checkpoint_dir, "step{:09d}_predicted.wav".format(
             global_step))
@@ -470,18 +470,18 @@ def save_states(global_step, writer, mel_outputs, linear_outputs, attn, mel, y,
         except Exception as e:
             warn(str(e))
             pass
-        audio.save_wav(signal, path)
+        dv3.audio.save_wav(signal, path)
 
     # Target mel spectrogram
     if mel_outputs is not None:
         mel_output = mel[idx].cpu().data.numpy()
-        mel_output = prepare_spec_image(audio._denormalize(mel_output))
+        mel_output = prepare_spec_image(dv3.audio._denormalize(mel_output))
         writer.add_image("Target mel spectrogram", mel_output, global_step)
 
     # Target spectrogram
     if linear_outputs is not None:
         linear_output = y[idx].cpu().data.numpy()
-        spectrogram = prepare_spec_image(audio._denormalize(linear_output))
+        spectrogram = prepare_spec_image(dv3.audio._denormalize(linear_output))
         writer.add_image("Target linear spectrogram", spectrogram, global_step)
 
 
@@ -578,7 +578,7 @@ def train(model, data_loader, optimizer, writer,
             ismultispeaker = speaker_ids is not None
             # Learning rate schedule
             if hparams.lr_schedule is not None:
-                lr_schedule_f = getattr(lrschedule, hparams.lr_schedule)
+                lr_schedule_f = getattr(dv3.lrschedule, hparams.lr_schedule)
                 current_lr = lr_schedule_f(
                     init_lr, global_step, **hparams.lr_schedule_kwargs)
                 for param_group in optimizer.param_groups:
