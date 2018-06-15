@@ -36,7 +36,7 @@ class Encoder(nn.Module):
         self.prohead = nn.Linear(128,1)
         self.residual_conv = nn.Linear(128,512)
         self.bn = nn.BatchNorm1d(N_samples)
-        
+
     def forward(self, x):
         x = self.prenet(x)
         x = x.view(batch_size*N_samples, x.size(2), x.size(3)).transpose(1,2)
@@ -62,20 +62,20 @@ class Encoder(nn.Module):
 # In[56]:
 
 
-enc = Encoder()
+# enc = Encoder()
 
 
 # In[57]:
 
 
-z = torch.randn(25,20,100,80)
+# z = torch.randn(25,20,100,80)
 
 
 # In[58]:
 
 
-out = enc(Variable(z))
-out
+# out = enc(Variable(z))
+# out
 
 
 # In[63]:
@@ -83,4 +83,3 @@ out
 
 #def Temp_Masking(x):
 #Create function for temporal masking. Use librosa.decompose.hpss. Split and concatinate dimensions to make it 2D.
-

@@ -44,29 +44,21 @@ def visualize(alignment, spectrogram):
   tight_layout()
   colorbar()
 
-def generate_cloned_samples(model,cloning_text_path  = None, no_speakers = 108 , fast = True, p =0 ):
-    # text = "here i am"
-    # speaker_id = 0
-    # fast = True
-    # p = 0
-    # waveform, alignment, spectrogram, mel = _tts(model, text, p, speaker_id, fast)
-    # print(waveform.shape)
-    # print(alignment.shape)
-    # print(spectrogram.shape)
-    # print(mel.shape)
-    # print(type(mel))
 
-    cloning_texts = ["this is the first" , "this is the first"]
+def generate_cloned_samples(model,cloning_text_path  = None, no_speakers = 108 , fast = True, p =0 ):
+
+    cloning_texts = ["this is the first" , "this is the second"]
     if(cloning_text_path == None):
         cloning_text_path = "./Cloning_Audio/cloning_text.txt"
 
-    # cloning_texts = open("./Cloning_Audio/cloning_text.txt").splitlines()
+    # cloning_texts = open("./Cloning_Audio/cloning_text.txt").read().splitlines()
     # no_cloning_texts = len(cloning_texts)
 
     all_speakers = []
+
     for speaker_id in range(no_speakers):
         speaker_cloning_mel = []
-        print("The Speaker being cloned speaker-{}".format(speaker_id))
+        # print("The Speaker being cloned speaker-{}".format(speaker_id))
         for text in cloning_texts:
             waveform, alignment, spectrogram, mel = _tts(model, text, p, speaker_id, fast)
             speaker_cloning_mel.append(mel)
@@ -74,9 +66,9 @@ def generate_cloned_samples(model,cloning_text_path  = None, no_speakers = 108 ,
         all_speakers.append(speaker_cloning_mel)
         with open("./Cloning_Audio/speakers_cloned_voices_mel.p", "wb") as fp:   #Pickling
             pickle.dump(all_speakers, fp)
-        print("")
+        # print("")
 
-    print(np.array(all_speakers).shape)
+    print("Shape of all speakers:",np.array(all_speakers).shape)
     # print(all_speakers.shape)
 
 
