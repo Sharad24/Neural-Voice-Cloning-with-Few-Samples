@@ -18,8 +18,8 @@ from Modules.Encoder import Attention
 # In[ ]:
 
 
-batch_size = 25
-N_samples = 20
+batch_size = 64
+N_samples = 23
 
 
 # In[55]:

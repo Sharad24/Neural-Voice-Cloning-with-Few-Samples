@@ -30,9 +30,9 @@ def get_cloned_voices(no_speakers = 108,no_cloned_texts = 23):
             cloned_voices = pickle.load(fp)
     except:
         cloned_voices = generate_cloned_samples()
-    if(numpy.array(cloned_voices).shape != (no_speakers , no_cloned_texts)):
+    if(np.array(cloned_voices).shape != (no_speakers , no_cloned_texts)):
         cloned_voices = generate_cloned_samples("./Cloning_Audio/cloning_text.txt" ,no_speakers,True,0)
-
+    print("Cloned_voices Loaded!")
     return cloned_voices
 
 # Assumes that only Deep Voice 3 is given
@@ -50,7 +50,7 @@ def build_encoder():
 
 
 
-def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=1000):
+def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=10000):
 
 	criterion = nn.L1Loss()
 	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.002)
@@ -86,7 +86,8 @@ def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=1000):
 		loss = criterion(output_from_encoder,embeddings)
 		loss.backward()
 		optimizer.step()
-		save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",epoch)
+		if i%100==0:
+			save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
 
 def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
 
@@ -98,7 +99,13 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
         "epoch":epoch+1,
 
     }, checkpoint_path)
+    if epoch%1000==0:
+        download_file(checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
+
+def download_file(file_name=None):
+    from google.colab import files
+    files.download(file_name)
 
 
 if __name__ == "__main__":
@@ -107,20 +114,20 @@ if __name__ == "__main__":
     # Pre Trained Model
     dv3_model = build_deepvoice_3(True)
 
-    # all_speakers = get_cloned_voices()
-    # print("Cloning Texts are produced")
-    
-    speaker_ebed = get_speaker_embeddings(dv3_model)
+    all_speakers = get_cloned_voices()
+    print("Cloning Texts are produced")
+
+    speaker_embed = get_speaker_embeddings(dv3_model)
     #
     encoder = build_encoder()
     #
     # # Training The Encoder
 
-    # try:
-    #     train_encoder(encoder, all_speakers, speaker_embed, batch_size=[1,1], epochs=1000)
-    # except KeyboardInterrupt:
-    #     print("KeyboardInterrupt")
+    try:
+        train_encoder(encoder, all_speakers, speaker_embed, batch_size=[1,1], epochs=1000)
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt")
 
     #
-    # print("Finished")
-    # sys.exit(0)
+    print("Finished")
+    sys.exit(0)
