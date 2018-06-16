@@ -30,9 +30,9 @@ def get_cloned_voices(no_speakers = 108,no_cloned_texts = 23):
             cloned_voices = pickle.load(fp)
     except:
         cloned_voices = generate_cloned_samples()
-    if(numpy.array(cloned_voices).shape != (no_speakers , no_cloned_texts)):
+    if(np.array(cloned_voices).shape != (no_speakers , no_cloned_texts)):
         cloned_voices = generate_cloned_samples("./Cloning_Audio/cloning_text.txt" ,no_speakers,True,0)
-
+    print("Cloned_voices Loaded!")
     return cloned_voices
 
 # Assumes that only Deep Voice 3 is given
@@ -107,9 +107,9 @@ if __name__ == "__main__":
     # Pre Trained Model
     dv3_model = build_deepvoice_3(True)
 
-    # all_speakers = get_cloned_voices()
-    # print("Cloning Texts are produced")
-    
+    all_speakers = get_cloned_voices()
+    print("Cloning Texts are produced")
+
     speaker_ebed = get_speaker_embeddings(dv3_model)
     #
     encoder = build_encoder()
