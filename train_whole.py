@@ -61,7 +61,7 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
-def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=1000):
+def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=10000):
 
 	criterion = nn.L1Loss()
 	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.002)
@@ -97,7 +97,12 @@ def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=1000):
 		loss = criterion(output_from_encoder,embeddings)
 		loss.backward()
 		optimizer.step()
-		save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",epoch)
+		if i%100==0:
+			save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
+
+def download_file(file_name=None):
+    from google.colab import files
+    files.download(file_name)
 
 
 if __name__ == "__main__":
@@ -107,9 +112,9 @@ if __name__ == "__main__":
     dv3_model = build_deepvoice_3(True)
 
     all_speakers = get_cloned_voices()
-    # print("Cloning Texts are produced")
+    print("Cloning Texts are produced")
 
-    speaker_ebed = get_speaker_embeddings(dv3_model)
+    speaker_embed = get_speaker_embeddings(dv3_model)
     #
     encoder = build_encoder()
     print("Encoder is built!")
@@ -122,5 +127,5 @@ if __name__ == "__main__":
         print("KeyboardInterrupt")
 
     #
-    # print("Finished")
-    # sys.exit(0)
+    print("Finished")
+    sys.exit(0)
