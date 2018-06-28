@@ -6,13 +6,14 @@ from torch.utils import data as data_utils
 from torch import nn
 from torch import optim
 import torch.backends.cudnn as cudnn
+from torch.utils.data import Dataset, Dataloader
 from torch.utils import data as data_utils
 from torch.utils.data.sampler import Sampler
 import numpy as np
 from numba import jit
 
 
-from utils import generate_cloned_samples
+from utils import generate_cloned_samples, Speech_Dataset
 import dv3
 
 import sys
@@ -61,35 +62,17 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
-def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=10000):
+def train_encoder(encoder, data, epochs=10000, after_epoch_download=1000):
 
 	criterion = nn.L1Loss()
 	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.002)
-
+    
 	for i in range(epochs):
 
-		for j in range(batch_size[0]):
-
-			for k in range(batch_size[1]):
-
-				elem = speakers[j][k]
-				elem = np.reshape(elem, (1,1,elem.shape[0],elem.shape[1]))
-
-				if(k==0):
-					inner_inputs = elem
-				else:
-					inner_inputs = np.hstack((inner_inputs,elem))
-
-			if(j==0):
-				true_inputs = inner_inputs
-				embed = embeddings[i]
-			else:
-				true_inputs = np.vstack((true_inputs,inner_inputs))
-				embed = np.vstack((embed,embeddings[i]))
-
+		for voice, embed in enumerate(data):
 
 		optimizer.zero_grad()
-		input_to_encoder = Variable(torch.from_numpy(true_inputs).type(torch.FloatTensor))
+		input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
 		output_from_encoder = encoder(input_to_encoder)
 
 		embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
@@ -97,13 +80,18 @@ def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=10000)
 		loss = criterion(output_from_encoder,embeddings)
 		loss.backward()
 		optimizer.step()
+
 		if i%100==0:
 			save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
+        if i%1000==0:
+            download_file("")
 
 def download_file(file_name=None):
     from google.colab import files
     files.download(file_name)
 
+
+batch_size=4
 
 if __name__ == "__main__":
 
@@ -118,8 +106,10 @@ if __name__ == "__main__":
     #
     encoder = build_encoder()
     print("Encoder is built!")
-    #
-    # # Training The Encoder
+
+    speech_data = Speech_Dataset(all_speakers, speaker_embed)
+    data_loader = Dataloader(speech_data, batch_size=batch_size, shuffle=True, drop_last=True)
+    # Training The Encoder
 
     try:
         train_encoder(encoder, all_speakers, speaker_embed, batch_size=[1,1], epochs=1000)
