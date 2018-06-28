@@ -62,10 +62,11 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
-def train_encoder(encoder, data, epochs=10000, after_epoch_download=1000):
+def train_encoder(encoder, data, epochs=100000, after_epoch_download=1000):
 
 	criterion = nn.L1Loss()
-	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.002)
+	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
 
 	for i in range(epochs):
 
@@ -85,13 +86,15 @@ def train_encoder(encoder, data, epochs=10000, after_epoch_download=1000):
 			save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
         if i%1000==0:
             download_file("encoder_checkpoint.pth")
+        if i%8000=0:
+            scheduler.step()
 
 def download_file(file_name=None):
     from google.colab import files
     files.download(file_name)
 
 
-batch_size=4
+batch_size=16
 
 if __name__ == "__main__":
 
@@ -112,7 +115,7 @@ if __name__ == "__main__":
     # Training The Encoder
 
     try:
-        train_encoder(encoder, all_speakers, speaker_embed, batch_size=[1,1], epochs=1000)
+        train_encoder(encoder, data_loader, epochs=100000)
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
 
