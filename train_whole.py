@@ -66,7 +66,7 @@ def train_encoder(encoder, data, epochs=10000, after_epoch_download=1000):
 
 	criterion = nn.L1Loss()
 	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.002)
-    
+
 	for i in range(epochs):
 
 		for voice, embed in enumerate(data):
@@ -84,7 +84,7 @@ def train_encoder(encoder, data, epochs=10000, after_epoch_download=1000):
 		if i%100==0:
 			save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
         if i%1000==0:
-            download_file("")
+            download_file("encoder_checkpoint.pth")
 
 def download_file(file_name=None):
     from google.colab import files
