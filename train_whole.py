@@ -2,11 +2,11 @@ import pickle
 
 import torch
 from torch.autograd import Variable
+from torch.utils.data import Dataset, DataLoader
 from torch.utils import data as data_utils
 from torch import nn
 from torch import optim
 import torch.backends.cudnn as cudnn
-from torch.utils.data import Dataset, Dataloader
 from torch.utils import data as data_utils
 from torch.utils.data.sampler import Sampler
 import numpy as np
@@ -47,7 +47,7 @@ def get_speaker_embeddings(model):
 
 def build_encoder():
     encoder = Encoder()
-    return  encoder
+    return encoder
 
 
 def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
@@ -64,30 +64,30 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
 
 def train_encoder(encoder, data, epochs=100000, after_epoch_download=1000):
 
-	criterion = nn.L1Loss()
-	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
+    criterion = nn.L1Loss()
+    optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
+    #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
 
-	for i in range(epochs):
+    for i in range(epochs):
 
-		for voice, embed in enumerate(data):
+        for voice, embed in enumerate(data):
 
-		optimizer.zero_grad()
-		input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
-		output_from_encoder = encoder(input_to_encoder)
+            optimizer.zero_grad()
+            input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
+            output_from_encoder = encoder(input_to_encoder)
 
-		embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
+            embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
 
-		loss = criterion(output_from_encoder,embeddings)
-		loss.backward()
-		optimizer.step()
+            loss = criterion(output_from_encoder,embeddings)
+            loss.backward()
+            optimizer.step()
 
-		if i%100==0:
-			save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
-        if i%1000==0:
-            download_file("encoder_checkpoint.pth")
-        if i%8000=0:
-            scheduler.step()
+            if i%100==0:
+                save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
+            if i%1000==0:
+                download_file("encoder_checkpoint.pth")
+            #if i%8000=0:
+                #scheduler.step()
 
 def download_file(file_name=None):
     from google.colab import files

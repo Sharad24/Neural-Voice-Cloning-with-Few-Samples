@@ -5,7 +5,7 @@ import torch
 import numpy as np
 import librosa
 import librosa.display
-from torch.utils.data import Dataset, Dataloader
+from torch.utils.data import Dataset
 
 # need this for English text processing frontend
 import nltk
@@ -84,7 +84,7 @@ class Speech_Dataset(Dataset):
         largest_size = self.voice[0][0]
         temp = [spec.shape[1] for text in self.voices for spec in text]
         largest_size = np.amax(np.array(temp))
-        self.voices = _pad(self.voices, largest size)
+        self.voices = _pad(self.voices, largest_size)
         self.embeddings = embeddings
 
     def _pad(specs, maximum_size):
