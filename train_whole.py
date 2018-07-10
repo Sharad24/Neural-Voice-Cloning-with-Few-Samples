@@ -70,9 +70,11 @@ def train_encoder(encoder, data, epochs=100000, after_epoch_download=1000):
 
     for i in range(epochs):
 
-        for voice, embed in enumerate(data):
+        for element in enumerate(data):
 
+            voice, embed = element[0], element[1]
             optimizer.zero_grad()
+            print(voice)
             input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
             output_from_encoder = encoder(input_to_encoder)
 
@@ -111,7 +113,7 @@ if __name__ == "__main__":
     print("Encoder is built!")
 
     speech_data = Speech_Dataset(all_speakers, speaker_embed)
-    data_loader = Dataloader(speech_data, batch_size=batch_size, shuffle=True, drop_last=True)
+    data_loader = DataLoader(speech_data, batch_size=batch_size, shuffle=True, drop_last=True)
     # Training The Encoder
 
     try:

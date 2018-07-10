@@ -81,32 +81,33 @@ class Speech_Dataset(Dataset):
     def __init__(self, mfccs, embeddings):
         '''Mfccs have to be list of lists of numpy arrays. Each of these numpy arrays will be a mel spectrogram'''
         self.voices = mfccs
-        largest_size = self.voice[0][0]
-        temp = [spec.shape[1] for text in self.voices for spec in text]
+        temp = [spec.shape[0] for text in self.voices for spec in text]
         largest_size = np.amax(np.array(temp))
-        self.voices = _pad(self.voices, largest_size)
+        self._pad(largest_size)
         self.embeddings = embeddings
-
-    def _pad(specs, maximum_size):
+    
+    def _pad(self, maximum_size):
         '''Input:
-        Specs: Mel Spectrograms with 80 channels but the length of each channel is not the same.
-        maximum_size: Largest channel length. Others are padded to this length
-
-        Padding with 0 won't affect the convolutions because anyway the neurons corresponding to the states have to
-        be dead if they are not padded. Putting 0 will also make those neurons dead. And later an average is taken along
-        this dimension too.
-
-        Returns: A padded array of arrays of spectrograms.'''
-        for i in specs:
-            for j in i:
-                final = np.zeros((80, maximum_size))
-                final[:, :specs[i][j].shape[1]] = specs[i][j]
-                specs[i][j]=final
-        return final
-
+            Specs: Mel Spectrograms with 80 channels but the length of each channel is not the same.
+            maximum_size: Largest channel length. Others are padded to this length
+            
+            Padding with 0 won't affect the convolutions because anyway the neurons corresponding to the states have to
+            be dead if they are not padded. Putting 0 will also make those neurons dead. And later an average is taken along
+            this dimension too.
+            
+            Returns: A padded array of arrays of spectrograms.'''
+        
+        for i, i_element in enumerate(self.voices):
+            for j, j_element in enumerate(i_element):
+                final = np.zeros((maximum_size, 80))
+                final[:self.voices[i][j].shape[0], :] += j_element
+                self.voices[i][j]=final
+        self.voices = np.array(self.voices)
+        print(self.voices.shape)
+    
     def __len__(self):
         '''Returns total number of speakers'''
         return  len(self.voices)
-
+    
     def __getitem__(self, idx):
         return (self.voices[idx], self.embeddings[idx])
