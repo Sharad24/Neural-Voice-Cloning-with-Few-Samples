@@ -70,20 +70,21 @@ def train_encoder(encoder, data, epochs=100000, after_epoch_download=1000):
 
     for i in range(epochs):
 
-        for element in enumerate(data):
+        for i, element in enumerate(data):
 
             voice, embed = element[0], element[1]
             optimizer.zero_grad()
-            print(voice)
-            input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
+            #input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
+            input_to_encoder = Variable(voice.type(torch.FloatTensor))
             output_from_encoder = encoder(input_to_encoder)
 
-            embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
+            #embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
+            embeddings = Variable(embed.type(torch.FloatTensor))
 
             loss = criterion(output_from_encoder,embeddings)
             loss.backward()
             optimizer.step()
-
+            print('1 done')
             if i%100==0:
                 save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
             if i%1000==0:
@@ -96,7 +97,7 @@ def download_file(file_name=None):
     files.download(file_name)
 
 
-batch_size=16
+batch_size=64
 
 if __name__ == "__main__":
 
@@ -113,8 +114,14 @@ if __name__ == "__main__":
     print("Encoder is built!")
 
     speech_data = Speech_Dataset(all_speakers, speaker_embed)
+    
+    #for i in range(5):
+    #    sample = speech_data[i]
+    #    print(sample[0].shape, sample[1].shape)
+    #    print(sample[0], sample[1])
     data_loader = DataLoader(speech_data, batch_size=batch_size, shuffle=True, drop_last=True)
     # Training The Encoder
+    dataiter = iter(data_loader)
 
     try:
         train_encoder(encoder, data_loader, epochs=100000)
