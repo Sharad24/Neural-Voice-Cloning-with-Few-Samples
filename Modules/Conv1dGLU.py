@@ -18,7 +18,7 @@ class Conv1dGLU(nn.Module):
     def forward(self, x):
         residual = x
         x = self.conv1(x)
-        x1, x2 = x.split(x.size(1)//2, dim = 1)
+        x1, x2 = x.split(x.size(1)//2, dim = 1)#WHAT IS A GLU??
         x = x1 * F.sigmoid(x2)
         x = self.conv2(x)
         x1, x2 = x.split(x.size(1)//2, dim = 1)

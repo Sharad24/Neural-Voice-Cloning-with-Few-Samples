@@ -11,7 +11,7 @@ import nltk
 
 import pickle
 
-import dv3.synthesis
+# import dv3.synthesis
 # import train
 # from deepvoice3_pytorch import frontend
 # from train import build_model
