@@ -4,7 +4,7 @@
   "replace_pronunciation_prob": 0.5,
   "builder": "deepvoice3_multispeaker",
   "n_speakers": 108,
-  "speaker_embed_dim": 16,
+  "speaker_embed_dim": 512,
   "num_mels": 80,
   "fmin": 125,
   "fmax": 7600,

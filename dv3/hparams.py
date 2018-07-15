@@ -29,7 +29,7 @@ hparams = tf.contrib.training.HParams(
 
     # Must be configured depends on the dataset and model you use
     n_speakers=1,
-    speaker_embed_dim=16,
+    speaker_embed_dim=512,
 
     # Presets known to work good.
     # NOTE: If specified, override hyper parameters with preset
@@ -60,7 +60,7 @@ hparams = tf.contrib.training.HParams(
         },
         "deepvoice3_vctk": {
             "n_speakers": 108,
-            "speaker_embed_dim": 16,
+            "speaker_embed_dim": 512,
             "downsample_step": 4,
             "outputs_per_step": 1,
             "embedding_weight_std": 0.1,
