@@ -24,14 +24,14 @@ from SpeechEmbedding import Encoder
 
 # print(hparams)
 
-def get_cloned_voices(no_speakers = 108,no_cloned_texts = 23):
+def get_cloned_voices(model,no_speakers = 108,no_cloned_texts = 23):
     try:
         with open("./Cloning_Audio/speakers_cloned_voices_mel.p" , "rb") as fp:
             cloned_voices = pickle.load(fp)
     except:
-        cloned_voices = generate_cloned_samples()
+        cloned_voices = generate_cloned_samples(model)
     if(np.array(cloned_voices).shape != (no_speakers , no_cloned_texts)):
-        cloned_voices = generate_cloned_samples("./Cloning_Audio/cloning_text.txt" ,no_speakers,True,0)
+        cloned_voices = generate_cloned_samples(model,"./Cloning_Audio/cloning_text.txt" ,no_speakers,True,0)
     print("Cloned_voices Loaded!")
     return cloned_voices
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
     # Pre Trained Model
     dv3_model = build_deepvoice_3(True)
 
-    all_speakers = get_cloned_voices()
+    all_speakers = get_cloned_voices(dv3_model)
     print("Cloning Texts are produced")
 
     speaker_embed = get_speaker_embeddings(dv3_model)
