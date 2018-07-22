@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 
 class PreNet(nn.Module):
-    def __init__(self):t
+    def __init__(self):
         super(PreNet,self).__init__()
         self.layer = nn.Linear(80,128)
 
