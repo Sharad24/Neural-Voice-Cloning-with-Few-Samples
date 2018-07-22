@@ -2,6 +2,7 @@ import pickle
 
 import torch
 from torch.autograd import Variable
+from torch.utils.data import Dataset, DataLoader
 from torch.utils import data as data_utils
 from torch import nn
 from torch import optim
@@ -12,7 +13,7 @@ import numpy as np
 from numba import jit
 
 
-from utils import generate_cloned_samples
+from utils import generate_cloned_samples, Speech_Dataset
 import dv3
 
 import sys
@@ -46,7 +47,7 @@ def get_speaker_embeddings(model):
 
 def build_encoder():
     encoder = Encoder()
-    return  encoder
+    return encoder
 
 
 def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
@@ -61,49 +62,42 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
-def train_encoder(encoder, speakers, embeddings, batch_size=[1,1], epochs=10000):
+def train_encoder(encoder, data, epochs=100000, after_epoch_download=1000):
 
-	criterion = nn.L1Loss()
-	optimizer = torch.optim.SGD(encoder.parameters(),lr=0.002)
+    criterion = nn.L1Loss()
+    optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
+    #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
 
-	for i in range(epochs):
+    for i in range(epochs):
 
-		for j in range(batch_size[0]):
+        for i, element in enumerate(data):
 
-			for k in range(batch_size[1]):
+            voice, embed = element[0], element[1]
+            optimizer.zero_grad()
+            #input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
+            input_to_encoder = Variable(voice.type(torch.FloatTensor))
+            output_from_encoder = encoder(input_to_encoder)
 
-				elem = speakers[j][k]
-				elem = np.reshape(elem, (1,1,elem.shape[0],elem.shape[1]))
+            #embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
+            embeddings = Variable(embed.type(torch.FloatTensor))
 
-				if(k==0):
-					inner_inputs = elem
-				else:
-					inner_inputs = np.hstack((inner_inputs,elem))
-
-			if(j==0):
-				true_inputs = inner_inputs
-				embed = embeddings[i]
-			else:
-				true_inputs = np.vstack((true_inputs,inner_inputs))
-				embed = np.vstack((embed,embeddings[i]))
-
-
-		optimizer.zero_grad()
-		input_to_encoder = Variable(torch.from_numpy(true_inputs).type(torch.FloatTensor))
-		output_from_encoder = encoder(input_to_encoder)
-
-		embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
-
-		loss = criterion(output_from_encoder,embeddings)
-		loss.backward()
-		optimizer.step()
-		if i%100==0:
-			save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
+            loss = criterion(output_from_encoder,embeddings)
+            loss.backward()
+            optimizer.step()
+            print('1 done')
+            if i%100==0:
+                save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
+            if i%1000==0:
+                download_file("encoder_checkpoint.pth")
+            #if i%8000=0:
+                #scheduler.step()
 
 def download_file(file_name=None):
     from google.colab import files
     files.download(file_name)
 
+
+batch_size=64
 
 if __name__ == "__main__":
 
@@ -118,11 +112,19 @@ if __name__ == "__main__":
     #
     encoder = build_encoder()
     print("Encoder is built!")
-    #
-    # # Training The Encoder
+
+    speech_data = Speech_Dataset(all_speakers, speaker_embed)
+    
+    #for i in range(5):
+    #    sample = speech_data[i]
+    #    print(sample[0].shape, sample[1].shape)
+    #    print(sample[0], sample[1])
+    data_loader = DataLoader(speech_data, batch_size=batch_size, shuffle=True, drop_last=True)
+    # Training The Encoder
+    dataiter = iter(data_loader)
 
     try:
-        train_encoder(encoder, all_speakers, speaker_embed, batch_size=[1,1], epochs=1000)
+        train_encoder(encoder, data_loader, epochs=100000)
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
 
