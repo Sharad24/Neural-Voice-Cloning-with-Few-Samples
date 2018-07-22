@@ -23,14 +23,14 @@ from dv3.deepvoice3_pytorch import frontend
 
 # print(os.getcwd())
 
-checkpoint_path = "./20171222_deepvoice3_vctk108_checkpoint_step000300000.pth"
 
+def build_deepvoice_3(pretrained = True , preset = None ,checkpoint_path = None):
+    if preset is None:
+        preset = "./dv3/deepvoice3_vctk.json"
 
-preset = "./dv3/deepvoice3_vctk.json"
+    if checkpoint_path is None:
+        checkpoint_path = "./20171222_deepvoice3_vctk108_checkpoint_step000300000.pth"
 
-
-
-def build_deepvoice_3(pretrained = True):
     # Newly added params. Need to inject dummy values
     for dummy, v in [("fmin", 0), ("fmax", 0),
                     ("rescaling", False),
