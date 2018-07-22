@@ -1,11 +1,10 @@
-Metadata-Version: 2.1
+Metadata-Version: 1.0
 Name: deepvoice3-pytorch
-Version: 0.0.1+97c2b8d
+Version: 0.0.1+e97ff00
 Summary: PyTorch implementation of Tacotron speech synthesis model.
 Home-page: UNKNOWN
+Author: UNKNOWN
+Author-email: UNKNOWN
 License: UNKNOWN
 Description: UNKNOWN
 Platform: UNKNOWN
-Provides-Extra: jp
-Provides-Extra: train
-Provides-Extra: test

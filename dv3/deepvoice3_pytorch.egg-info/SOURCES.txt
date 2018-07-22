@@ -5,6 +5,7 @@ deepvoice3_pytorch/conv.py
 deepvoice3_pytorch/deepvoice3.py
 deepvoice3_pytorch/modules.py
 deepvoice3_pytorch/nyanko.py
+deepvoice3_pytorch/version.py
 deepvoice3_pytorch.egg-info/PKG-INFO
 deepvoice3_pytorch.egg-info/SOURCES.txt
 deepvoice3_pytorch.egg-info/dependency_links.txt
