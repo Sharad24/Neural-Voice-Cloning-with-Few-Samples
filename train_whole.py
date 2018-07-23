@@ -64,8 +64,6 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
 
 def train_encoder(encoder, data, epochs=100000, after_epoch_download=1000):
 
-    criterion = nn.L1Loss()
-    optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
     #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
 
     for i in range(epochs):
@@ -114,7 +112,9 @@ if __name__ == "__main__":
     print("Encoder is built!")
 
     speech_data = Speech_Dataset(all_speakers, speaker_embed)
-    
+
+    criterion = nn.L1Loss()
+    optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
     #for i in range(5):
     #    sample = speech_data[i]
     #    print(sample[0].shape, sample[1].shape)
