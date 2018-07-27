@@ -124,9 +124,8 @@ if __name__ == "__main__":
 
     optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
 
-    lambda1 = lambda epoch: 1 if epoch%8000==7999 else 0
-    lambda2 = lambda epoch: 0.6 if epoch==1 else 1
-    scheduler - torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=[lambda1, lambda2])
+    lambda1 = lambda epoch: 0.6 if epoch%8000==7999 else 1
+    scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lambda1)
 
     data_loader = DataLoader(speech_data, batch_size=batch_size, shuffle=True, drop_last=True)
     # Training The Encoder
@@ -138,6 +137,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
 
-    #
     print("Finished")
     sys.exit(0)
