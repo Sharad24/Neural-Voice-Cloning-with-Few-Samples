@@ -20,6 +20,7 @@ class Attention(nn.Module):
 
     def forward(self, inputs):
         net_inputs = inputs
+        net_inputs.contiguous()
         for enc in self.encoders:
             net_inputs = enc(net_inputs, net_inputs)
         return net_inputs

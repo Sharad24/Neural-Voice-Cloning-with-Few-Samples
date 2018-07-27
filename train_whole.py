@@ -50,7 +50,7 @@ def build_encoder():
     return encoder
 
 
-def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
+def save_checkpoint(model, optimizer, checkpoint_path, epoch):
 
     optimizer_state = optimizer.state_dict()
     torch.save({
@@ -62,31 +62,31 @@ def save_checkpoint(model, optimizer, checkpoint_dir,epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
-def train_encoder(encoder, data, epochs=100000, after_epoch_download=1000):
+def train_encoder(encoder, data, optimizer, criterion, epochs=100000, after_epoch_download=1000):
 
     #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
 
     for i in range(epochs):
 
-        for i, element in enumerate(data):
+        for i_element, element in enumerate(data):
 
             voice, embed = element[0], element[1]
             optimizer.zero_grad()
             #input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
-            input_to_encoder = Variable(voice.type(torch.FloatTensor))
+            input_to_encoder = Variable(voice.type(torch.cuda.FloatTensor))
             output_from_encoder = encoder(input_to_encoder)
 
             #embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
-            embeddings = Variable(embed.type(torch.FloatTensor))
+            embeddings = Variable(embed.type(torch.cuda.FloatTensor))
 
             loss = criterion(output_from_encoder,embeddings)
             loss.backward()
             optimizer.step()
             print('1 done')
-            if i%100==0:
+            if i%100==99:
                 save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
-            if i%1000==0:
-                download_file("encoder_checkpoint.pth")
+            #if i%1000==:
+                #download_file("encoder_checkpoint.pth")
             #if i%8000=0:
                 #scheduler.step()
 
@@ -123,8 +123,9 @@ if __name__ == "__main__":
     # Training The Encoder
     dataiter = iter(data_loader)
 
+    encoder = encoder.cuda()
     try:
-        train_encoder(encoder, data_loader, epochs=100000)
+        train_encoder(encoder, data_loader, optimizer, criterion, epochs=100000)
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
 

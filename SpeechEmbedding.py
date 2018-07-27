@@ -48,6 +48,7 @@ class Encoder(nn.Module):
         x = x.mean(dim=2)
         conv_out = x
         conv_out = self.residual_conv(conv_out)
+        x.contiguous()
         x = self.attention(x)
         x = self.prohead(x)
         x = x.squeeze()
