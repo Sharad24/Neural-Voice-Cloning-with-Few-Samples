@@ -62,6 +62,8 @@ class MultiHeadAttention(nn.Module):
         attention = torch.cat(
             attention.split(split_size=restore_chunk_size, dim=0), dim=2)
         attention += query
-        attention = self.bn(attention.transpose(1, 2)).transpose(1, 2)
+        attention = attention.transpose(1, 2)
+        attention.contiguous()
+        attention = self.bn(attention).transpose(1, 2)
 
         return attention

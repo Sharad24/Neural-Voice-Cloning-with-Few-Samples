@@ -38,6 +38,7 @@ class Encoder(nn.Module):
         self.bn = nn.BatchNorm1d(N_samples)
 
     def forward(self, x):
+        #print(x)
         x = self.prenet(x)
         x = x.view(batch_size*N_samples, x.size(2), x.size(3)).transpose(1,2)
         x = self.conv(x)
@@ -49,14 +50,16 @@ class Encoder(nn.Module):
         conv_out = x
         conv_out = self.residual_conv(conv_out)
         x.contiguous()
+        #print(x)
         x = self.attention(x)
+        #print(x)
         x = self.prohead(x)
-        x = x.squeeze()
+        x = torch.squeeze(x)
         x = F.softsign(x)
         x = self.bn(x)
-        x = x.unsqueeze(dim=2)
+        x = torch.unsqueeze(x, dim=2)
         x = torch.bmm(x.transpose(1,2), conv_out)
-        x = x.squeeze()
+        x = torch.squeeze(x)
         return x
 
 

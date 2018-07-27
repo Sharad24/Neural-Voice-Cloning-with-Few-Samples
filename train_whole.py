@@ -62,33 +62,39 @@ def save_checkpoint(model, optimizer, checkpoint_path, epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
-def train_encoder(encoder, data, optimizer, criterion, epochs=100000, after_epoch_download=1000):
+def train_encoder(encoder, data, optimizer, scheduler, criterion, epochs=100000, after_epoch_download=1000):
 
     #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
 
     for i in range(epochs):
 
+        epoch_loss=0.0
+
         for i_element, element in enumerate(data):
 
             voice, embed = element[0], element[1]
-            optimizer.zero_grad()
-            #input_to_encoder = Variable(torch.from_numpy(voice).type(torch.FloatTensor))
+
             input_to_encoder = Variable(voice.type(torch.cuda.FloatTensor))
+
+            optimizer.zero_grad()
+
             output_from_encoder = encoder(input_to_encoder)
 
-            #embeddings = Variable(torch.from_numpy(embed).type(torch.LongTensor))
             embeddings = Variable(embed.type(torch.cuda.FloatTensor))
 
             loss = criterion(output_from_encoder,embeddings)
+
             loss.backward()
+
+            scheduler.step()
             optimizer.step()
-            print('1 done')
-            if i%100==99:
-                save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
-            #if i%1000==:
-                #download_file("encoder_checkpoint.pth")
-            #if i%8000=0:
-                #scheduler.step()
+
+            epoch_loss+=loss
+
+        if i%100==99:
+            save_checkpoint(encoder,optimizer,"encoder_checkpoint.pth",i)
+        print(i, ' done')
+        print('Loss for epoch ', i, ' is ', loss)
 
 def download_file(file_name=None):
     from google.colab import files
@@ -107,25 +113,28 @@ if __name__ == "__main__":
     print("Cloning Texts are produced")
 
     speaker_embed = get_speaker_embeddings(dv3_model)
-    #
+
     encoder = build_encoder()
+
     print("Encoder is built!")
 
     speech_data = Speech_Dataset(all_speakers, speaker_embed)
 
     criterion = nn.L1Loss()
+
     optimizer = torch.optim.SGD(encoder.parameters(),lr=0.0006)
-    #for i in range(5):
-    #    sample = speech_data[i]
-    #    print(sample[0].shape, sample[1].shape)
-    #    print(sample[0], sample[1])
+
+    lambda1 = lambda epoch: 1 if epoch%8000==7999 else 0
+    lambda2 = lambda epoch: 0.6 if epoch==1 else 1
+    scheduler - torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=[lambda1, lambda2])
+
     data_loader = DataLoader(speech_data, batch_size=batch_size, shuffle=True, drop_last=True)
     # Training The Encoder
     dataiter = iter(data_loader)
 
     encoder = encoder.cuda()
     try:
-        train_encoder(encoder, data_loader, optimizer, criterion, epochs=100000)
+        train_encoder(encoder, data_loader, optimizer, scheduler, criterion, epochs=100000)
     except KeyboardInterrupt:
         print("KeyboardInterrupt")
 
