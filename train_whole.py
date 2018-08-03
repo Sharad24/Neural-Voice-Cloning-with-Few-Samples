@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
     encoder = encoder.cuda()
 
-    if os.path.is_file('checkpoints/encoder_checkpoint.pth'):
+    if os.path.isfile('checkpoints/encoder_checkpoint.pth'):
         encoder, optimizer = load_checkpoint(encoder, optimizer)
     
     try:
