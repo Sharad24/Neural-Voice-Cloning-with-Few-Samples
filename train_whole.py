@@ -62,6 +62,20 @@ def save_checkpoint(model, optimizer, checkpoint_path, epoch):
     }, checkpoint_path)
     print("Saved checkpoint:", checkpoint_path)
 
+def load_checkpoint(encoder, optimizer, path='checkpoints/encoder_checkpoint.pth'):
+
+    checkpoint = torch.load(path)
+
+    encoder.load_state_dict(checkpoint["state_dict"])
+
+    print('Encoder state restored')
+
+    optimizer.load_state_dict(checkpoint["optimizer"])
+
+    print('Optimizer state restored')
+
+    return encoder, optimizer
+
 def train_encoder(encoder, data, optimizer, scheduler, criterion, epochs=100000, after_epoch_download=1000):
 
     #scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.6)
@@ -132,6 +146,10 @@ if __name__ == "__main__":
     dataiter = iter(data_loader)
 
     encoder = encoder.cuda()
+
+    if os.path.is_file('checkpoints/encoder_checkpoint.pth'):
+        encoder, optimizer = load_checkpoint(encoder, optimizer)
+    
     try:
         train_encoder(encoder, data_loader, optimizer, scheduler, criterion, epochs=100000)
     except KeyboardInterrupt:
