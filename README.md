@@ -1,7 +1,7 @@
 # Neural-Voice-Cloning-with-Few-Samples
 Implementation of the paper titled "Neural Voice Cloning with Few Samples" by Baidu [link](https://arxiv.org/pdf/1802.06006)
 
-A checkpoint for the encoder trained on 5k epochs can be found in the checkpoints directory
+A checkpoint for the encoder trained on 56k epochs with a loss of 0.0810 can be found in the checkpoints directory
 
 Incomplete~
 
