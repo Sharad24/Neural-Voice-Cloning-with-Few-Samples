@@ -3,7 +3,7 @@ Implementation of the paper titled "Neural Voice Cloning with Few Samples" by Ba
 
 A checkpoint for the encoder trained on 56k epochs with a loss of 0.0810 can be found in the checkpoints directory
 
-The repository is only partially complete
+The repository is only partially complete. The future commits will happen on https://github.com/SforAiDl/Neural-Voice-Cloning-With-Few-Samples repository.
 
 # Acknowledgements
 
