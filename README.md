@@ -16,7 +16,7 @@ If you find the code in the repository useful, please cite it using:
 
 ```
 @misc{chitlangia2021voicecloning,
-  author = {Chitlangia, Sharad and Rastogi Mehul and Ganguly Rijul},
+  author = {Chitlangia, Sharad and Rastogi, Mehul and Ganguly, Rijul},
   title = {An Open Source Implementation of Neural Voice Cloning With Few Samples},
   year = {2021},
   publisher = {GitHub},
