@@ -10,3 +10,17 @@ All the future commits will happen on https://github.com/SforAiDl/Neural-Voice-C
 
 The implementation of deep voice 3 was done from the following repository:
 https://github.com/r9y9/deepvoice3_pytorch
+
+# Cite
+If you find the code in the repository useful, please cite it using:
+
+```
+@misc{chitlangia2021voicecloning,
+  author = {Chitlangia, Sharad and Rastogi Mehul and Ganguly Rijul},
+  title = {An Open Source Implementation of Neural Voice Cloning With Few Samples},
+  year = {2021},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {Available at \url{https://github.com/SforAiDl/Neural-Voice-Cloning-With-Few-Samples/} or \url{https://github.com/Sharad24/Neural-Voice-Cloning-With-Few-Samples/}},
+}
+```
